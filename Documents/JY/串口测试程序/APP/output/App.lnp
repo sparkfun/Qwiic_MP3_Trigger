@@ -1,4 +1,0 @@
-".\Output\Main.obj",
-".\Output\UART.obj" 
-TO ".\Output\App" 
-PRINT(".\Output\App.m51")

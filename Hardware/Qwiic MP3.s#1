@@ -13054,6 +13054,13 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="J10" gate="G$1" pin="1"/>
 </segment>
 </net>
+<net name="TRIGGER32" class="0">
+<segment>
+<pinref part="J12" gate="G$1" pin="2"/>
+<wire x1="106.68" y1="45.72" x2="109.22" y2="45.72" width="0.1524" layer="91"/>
+<label x="109.22" y="45.72" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
 <net name="TRIGGER2" class="0">
 <segment>
 <wire x1="198.12" y1="147.32" x2="200.66" y2="147.32" width="0.1524" layer="91"/>
@@ -13385,11 +13392,6 @@ from being injected onto Qwiic 3.3V</text>
 <wire x1="198.12" y1="142.24" x2="200.66" y2="142.24" width="0.1524" layer="91"/>
 <label x="200.66" y="142.24" size="1.27" layer="95" xref="yes"/>
 <pinref part="U4" gate="U1" pin="(INT0)~8"/>
-</segment>
-<segment>
-<pinref part="J12" gate="G$1" pin="2"/>
-<wire x1="106.68" y1="45.72" x2="109.22" y2="45.72" width="0.1524" layer="91"/>
-<label x="109.22" y="45.72" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>

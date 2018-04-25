@@ -40,10 +40,10 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="yes"/>
 <layer number="51" name="tDocu" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="no" active="yes"/>
@@ -5909,7 +5909,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <element name="U4" library="SparkFun-IC-Microcontroller" package="SO14" value="ATTINY84-ARDUINO" x="12.7" y="20.32" rot="R180">
 <attribute name="PROD_ID" value="IC-11285" x="12.7" y="20.32" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="JP9" library="SparkFun-Jumpers" package="SMT-JUMPER_3_2-NC_TRACE_SILK" value="" x="21.59" y="11.43" rot="R180"/>
+<element name="JP9" library="SparkFun-Jumpers" package="SMT-JUMPER_3_2-NC_TRACE_SILK" value="JUMPER-SMT_3_2-NC_TRACE_SILK" x="21.59" y="11.43" rot="R180"/>
 <element name="J7" library="SparkFun-Connectors" package="2X3_TEST_POINTS" value="ISP" x="19.05" y="26.67" rot="R270"/>
 <element name="U$8" library="Labels" package="I_SUPER2_C-()-03" value="" x="20.193" y="13.335"/>
 <element name="U$9" library="Labels" package="INT#-[&lt;" value="" x="16.51" y="1.524" rot="R90"/>
@@ -6264,7 +6264,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="13.335" y1="24.003" x2="13.5636" y2="24.2316" width="0.1524" layer="1"/>
 <wire x1="13.5636" y1="25.4" x2="13.5636" y2="24.2316" width="0.1524" layer="1"/>
 </signal>
-<signal name="TRIGGER4">
+<signal name="TRIGGER1">
 <contactref element="J12" pad="1"/>
 <contactref element="U4" pad="10"/>
 <via x="10.795" y="16.002" extent="1-16" drill="0.3048"/>
@@ -6592,7 +6592,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <contactref element="C8" pad="2"/>
 <wire x1="23.71" y1="39.37" x2="23.71" y2="38.1" width="0.1524" layer="1"/>
 </signal>
-<signal name="TRIGGER1">
+<signal name="TRIGGER4">
 <contactref element="U4" pad="8"/>
 <contactref element="J7" pad="1"/>
 <contactref element="J12" pad="4"/>
@@ -6616,6 +6616,19 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="6.35" y1="26.924" x2="6.35" y2="26.162" width="0.1524" layer="1"/>
 </signal>
 <signal name="TRIGGER2">
+<contactref element="U4" pad="5"/>
+<contactref element="J12" pad="2"/>
+<via x="10.16" y="24.257" extent="1-16" drill="0.3048"/>
+<wire x1="10.795" y1="23.12" x2="10.795" y2="24.003" width="0.1524" layer="1"/>
+<wire x1="10.16" y1="24.257" x2="10.541" y2="24.257" width="0.1524" layer="1"/>
+<wire x1="10.541" y1="24.257" x2="10.795" y2="24.003" width="0.1524" layer="1"/>
+<wire x1="8.001" y1="26.416" x2="10.16" y2="24.257" width="0.1524" layer="16"/>
+<wire x1="13.97" y1="46.99" x2="7.747" y2="40.767" width="0.1524" layer="16"/>
+<wire x1="7.747" y1="40.767" x2="7.747" y2="28.067" width="0.1524" layer="16"/>
+<wire x1="7.747" y1="28.067" x2="8.001" y2="27.813" width="0.1524" layer="16"/>
+<wire x1="8.001" y1="27.813" x2="8.001" y2="26.416" width="0.1524" layer="16"/>
+</signal>
+<signal name="TRIGGER3">
 <contactref element="U4" pad="2"/>
 <contactref element="J12" pad="3"/>
 <wire x1="7.239" y1="42.799" x2="7.239" y2="26.67" width="0.1524" layer="16"/>
@@ -6652,25 +6665,13 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="11.99" y1="42.62" x2="15.24" y2="39.37" width="0.1524" layer="1"/>
 <wire x1="15.24" y1="39.37" x2="18.2" y2="39.37" width="0.1524" layer="1"/>
 </signal>
-<signal name="TRIGGER3">
-<contactref element="U4" pad="5"/>
-<contactref element="J12" pad="2"/>
-<via x="10.16" y="24.257" extent="1-16" drill="0.3048"/>
-<wire x1="10.16" y1="24.257" x2="10.541" y2="24.257" width="0.1524" layer="1"/>
-<wire x1="10.795" y1="24.003" x2="10.541" y2="24.257" width="0.1524" layer="1"/>
-<wire x1="8.001" y1="26.416" x2="10.16" y2="24.257" width="0.1524" layer="16"/>
-<wire x1="13.97" y1="46.99" x2="7.747" y2="40.767" width="0.1524" layer="16"/>
-<wire x1="7.747" y1="40.767" x2="7.747" y2="28.067" width="0.1524" layer="16"/>
-<wire x1="7.747" y1="28.067" x2="8.001" y2="27.813" width="0.1524" layer="16"/>
-<wire x1="8.001" y1="27.813" x2="8.001" y2="26.416" width="0.1524" layer="16"/>
-<wire x1="10.795" y1="23.12" x2="10.795" y2="24.003" width="0.1524" layer="1"/>
-</signal>
 </signals>
 <errors>
 <approved hash="5,1,7b4183d4acb55a20"/>
 <approved hash="5,1,53a1a57d8a1c72c0"/>
 <approved hash="4,1,2fcff934a7407e1c"/>
 <approved hash="4,1,ba3258691ab6e40e"/>
+<approved hash="4,1,6d14e68564e8e339"/>
 <approved hash="4,1,71acd62d5470ff91"/>
 <approved hash="19,1,6ddfe735eb779cbc"/>
 <approved hash="19,1,cececfe3071f0632"/>
@@ -6681,7 +6682,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <approved hash="19,1,bf582acbd0994788"/>
 <approved hash="19,1,8d5770c48a947585"/>
 <approved hash="19,1,5449328716198df6"/>
-<approved hash="4,1,6d14e68564e8e339"/>
 </errors>
 </board>
 </drawing>

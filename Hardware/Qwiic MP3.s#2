@@ -12552,7 +12552,7 @@ Note:  SparkFun currenly only uses the QFN style part</description>
 <text x="156.718" y="99.06" size="1.778" layer="97">I2C Address Selection
 Open Jumper (Default): 0x37
 Closed Jumper: 0x38</text>
-<text x="215.773" y="164.211" size="1.778" layer="97">I2C Pull Ups</text>
+<text x="213.233" y="164.211" size="1.778" layer="97">I2C Pull Ups</text>
 <text x="55.88" y="2.54" size="1.27" layer="91">Don't drive INT high, just low (open drain)</text>
 <text x="102.235" y="57.912" size="1.778" layer="97">Button Triggers</text>
 <text x="7.62" y="66.04" size="1.778" layer="97">3.3V VReg prevents USB 5V 
@@ -12594,9 +12594,9 @@ from being injected onto Qwiic 3.3V</text>
 <instance part="SUPPLY12" gate="G$1" x="152.4" y="142.24"/>
 <instance part="GND5" gate="1" x="152.4" y="127"/>
 <instance part="C2" gate="G$1" x="152.4" y="134.62"/>
-<instance part="R2" gate="G$1" x="231.14" y="142.24" rot="R90"/>
-<instance part="R6" gate="G$1" x="215.9" y="142.24" rot="R90"/>
-<instance part="SUPPLY15" gate="G$1" x="223.52" y="157.48"/>
+<instance part="R2" gate="G$1" x="228.6" y="142.24" rot="R90"/>
+<instance part="R6" gate="G$1" x="213.36" y="142.24" rot="R90"/>
+<instance part="SUPPLY15" gate="G$1" x="220.98" y="157.48"/>
 <instance part="GND12" gate="1" x="218.44" y="104.14" rot="MR0"/>
 <instance part="SUPPLY17" gate="G$1" x="160.02" y="152.4"/>
 <instance part="GND13" gate="1" x="160.02" y="114.3"/>
@@ -12649,9 +12649,9 @@ from being injected onto Qwiic 3.3V</text>
 <instance part="JP7" gate="G$1" x="218.44" y="114.3" rot="R90"/>
 <instance part="J1" gate="J1" x="33.02" y="142.24"/>
 <instance part="U4" gate="U1" x="180.34" y="134.62"/>
-<instance part="JP9" gate="G$1" x="223.52" y="149.86" smashed="yes" rot="R270">
-<attribute name="NAME" x="221.488" y="145.923" size="1.778" layer="95" font="vector"/>
-<attribute name="VALUE" x="223.139" y="147.32" size="1.778" layer="96" font="vector" rot="R270" align="top-left"/>
+<instance part="JP9" gate="G$1" x="220.98" y="149.86" smashed="yes" rot="R270">
+<attribute name="NAME" x="218.948" y="145.923" size="1.778" layer="95" font="vector"/>
+<attribute name="VALUE" x="220.599" y="147.32" size="1.778" layer="96" font="vector" rot="R270" align="top-left"/>
 </instance>
 <instance part="J7" gate="G$1" x="177.8" y="165.1"/>
 <instance part="JP11" gate="G$1" x="243.84" y="30.48"/>
@@ -12711,7 +12711,7 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="C2" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<wire x1="223.52" y1="154.94" x2="223.52" y2="157.48" width="0.1524" layer="91"/>
+<wire x1="220.98" y1="154.94" x2="220.98" y2="157.48" width="0.1524" layer="91"/>
 <pinref part="SUPPLY15" gate="G$1" pin="3.3V"/>
 <pinref part="JP9" gate="G$1" pin="2"/>
 </segment>
@@ -12928,12 +12928,12 @@ from being injected onto Qwiic 3.3V</text>
 <label x="50.8" y="25.4" size="1.27" layer="95" rot="MR180" xref="yes"/>
 </segment>
 <segment>
-<wire x1="198.12" y1="129.54" x2="231.14" y2="129.54" width="0.1524" layer="91"/>
-<label x="233.68" y="129.54" size="1.27" layer="95" xref="yes"/>
+<wire x1="198.12" y1="129.54" x2="228.6" y2="129.54" width="0.1524" layer="91"/>
+<label x="231.14" y="129.54" size="1.27" layer="95" xref="yes"/>
 <pinref part="R2" gate="G$1" pin="1"/>
-<wire x1="231.14" y1="129.54" x2="233.68" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="231.14" y1="137.16" x2="231.14" y2="129.54" width="0.1524" layer="91"/>
-<junction x="231.14" y="129.54"/>
+<wire x1="228.6" y1="129.54" x2="231.14" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="228.6" y1="137.16" x2="228.6" y2="129.54" width="0.1524" layer="91"/>
+<junction x="228.6" y="129.54"/>
 <pinref part="U4" gate="U1" pin="(SCL/SCK/A4)4"/>
 </segment>
 <segment>
@@ -12959,12 +12959,12 @@ from being injected onto Qwiic 3.3V</text>
 <label x="50.8" y="22.86" size="1.27" layer="95" rot="MR180" xref="yes"/>
 </segment>
 <segment>
-<wire x1="198.12" y1="134.62" x2="215.9" y2="134.62" width="0.1524" layer="91"/>
-<label x="218.44" y="134.62" size="1.27" layer="95" xref="yes"/>
+<wire x1="198.12" y1="134.62" x2="213.36" y2="134.62" width="0.1524" layer="91"/>
+<label x="215.9" y="134.62" size="1.27" layer="95" xref="yes"/>
 <pinref part="R6" gate="G$1" pin="1"/>
-<wire x1="215.9" y1="134.62" x2="218.44" y2="134.62" width="0.1524" layer="91"/>
-<wire x1="215.9" y1="137.16" x2="215.9" y2="134.62" width="0.1524" layer="91"/>
-<junction x="215.9" y="134.62"/>
+<wire x1="213.36" y1="134.62" x2="215.9" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="213.36" y1="137.16" x2="213.36" y2="134.62" width="0.1524" layer="91"/>
+<junction x="213.36" y="134.62"/>
 <pinref part="U4" gate="U1" pin="(RX/SDA/MOSI/A6)~6"/>
 </segment>
 <segment>
@@ -12995,16 +12995,16 @@ from being injected onto Qwiic 3.3V</text>
 <net name="SCL_PU1" class="0">
 <segment>
 <pinref part="R2" gate="G$1" pin="2"/>
-<wire x1="228.6" y1="149.86" x2="231.14" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="231.14" y1="149.86" x2="231.14" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="226.06" y1="149.86" x2="228.6" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="228.6" y1="149.86" x2="228.6" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="JP9" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="SDA_PU1" class="0">
 <segment>
 <pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="218.44" y1="149.86" x2="215.9" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="215.9" y1="149.86" x2="215.9" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="215.9" y1="149.86" x2="213.36" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="213.36" y1="149.86" x2="213.36" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="JP9" gate="G$1" pin="3"/>
 </segment>
 </net>
@@ -13021,7 +13021,7 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="U4" gate="U1" pin="(XTAL2)9"/>
 </segment>
 </net>
-<net name="TRIGGER4" class="0">
+<net name="TRIGGER1" class="0">
 <segment>
 <wire x1="198.12" y1="127" x2="200.66" y2="127" width="0.1524" layer="91"/>
 <label x="200.66" y="127" size="1.27" layer="95" xref="yes"/>
@@ -13055,6 +13055,18 @@ from being injected onto Qwiic 3.3V</text>
 </segment>
 </net>
 <net name="TRIGGER2" class="0">
+<segment>
+<wire x1="198.12" y1="142.24" x2="200.66" y2="142.24" width="0.1524" layer="91"/>
+<label x="200.66" y="142.24" size="1.27" layer="95" xref="yes"/>
+<pinref part="U4" gate="U1" pin="(INT0)~8"/>
+</segment>
+<segment>
+<pinref part="J12" gate="G$1" pin="2"/>
+<wire x1="106.68" y1="45.72" x2="109.22" y2="45.72" width="0.1524" layer="91"/>
+<label x="109.22" y="45.72" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="TRIGGER3" class="0">
 <segment>
 <wire x1="198.12" y1="147.32" x2="200.66" y2="147.32" width="0.1524" layer="91"/>
 <label x="200.66" y="147.32" size="1.27" layer="95" xref="yes"/>
@@ -13338,7 +13350,7 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="C8" gate="G$1" pin="2"/>
 </segment>
 </net>
-<net name="TRIGGER1" class="0">
+<net name="TRIGGER4" class="0">
 <segment>
 <wire x1="198.12" y1="132.08" x2="200.66" y2="132.08" width="0.1524" layer="91"/>
 <label x="200.66" y="132.08" size="1.27" layer="95" xref="yes"/>
@@ -13378,18 +13390,6 @@ from being injected onto Qwiic 3.3V</text>
 <junction x="119.38" y="91.44"/>
 <wire x1="124.46" y1="96.52" x2="119.38" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="119.38" y1="96.52" x2="119.38" y2="91.44" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="TRIGGER3" class="0">
-<segment>
-<wire x1="198.12" y1="142.24" x2="200.66" y2="142.24" width="0.1524" layer="91"/>
-<label x="200.66" y="142.24" size="1.27" layer="95" xref="yes"/>
-<pinref part="U4" gate="U1" pin="(INT0)~8"/>
-</segment>
-<segment>
-<pinref part="J12" gate="G$1" pin="2"/>
-<wire x1="106.68" y1="45.72" x2="109.22" y2="45.72" width="0.1524" layer="91"/>
-<label x="109.22" y="45.72" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>

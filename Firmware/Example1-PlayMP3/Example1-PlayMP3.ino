@@ -6,171 +6,113 @@
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
   This example shows how to read the PM2.5 and PM10 readings from the sensor
+
+  I2C Commands to respect:
+  
+  Stop
+  Play file named F003.mp3 - limited to 255
+  Play file # by index - limited to 255
+  Change volume - limited to 31
+  Play next
+  Play previous
+
+  Return status of last command:
+  0x00 = OK
+  0x01 = Fail, command error, no execution
+  0x02 = No such file
+  0x05 = SD error
+
+  Play file named T09 from triggers.
+
 */
 
-#include <SoftwareSerial.h>
+#include <Wire.h>
 
-#define COMMAND_PLAY_INDEX_IN_ROOT 0xA2
-#define COMMAND_PLAY_FILE_IN_ROOT 0xA3
-#define COMMAND_PLAY_INDEX_IN_FOLDER 0xA4
-#define COMMAND_PLAY_FILE_IN_FOLDER 0xA5
-#define COMMAND_PAUSE 0xAA
-#define COMMAND_STOP 0xAB
-#define COMMAND_NEXT 0xAC
-#define COMMAND_PREVIOUS 0xAD
-#define COMMAND_SET_VOLUME 0xAE
-#define COMMAND_SET_EQ_MODE 0xB2
+byte mp3Address = 0x37; //Unshifted 7-bit default address for Qwiic MP3
 
-#define COMMAND_GET_VOLUME 0xC1
-#define COMMAND_GET_CURRENT_STATE 0xC2
-#define COMMAND_GET_SONG_COUNT 0xC5
-#define COMMAND_GET_SONGS_IN_FOLDER_COUNT 0xC6
-#define COMMAND_GET_FILE_PLAYING 0xC9
-#define COMMAND_GET_SONG_NAME_PLAYING 0xCB
-
-#define MP3_START_CODE 0x7E
-#define MP3_END_CODE 0xEF
-
-SoftwareSerial mp3(6, 7); // RX, TX
-//SoftwareSerial mp3(1, 0); // RX, TX on Tiny
-
-byte commandBytes[20];
+//These are the commands we can send
+#define COMMAND_STOP 0x00
+#define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names this plays 2nd file in dir.
+#define COMMAND_PLAY_FILENUMBER 0x02 //Play a file # from the root directory: 3 will play F003xxx.mp3
+#define COMMAND_CHANGE_VOLUME 0x03
+#define COMMAND_PLAY_NEXT 0x04
+#define COMMAND_PLAY_PREVIOUS 0x05
+#define COMMAND_CHANGE_EQ 0x06
+#define COMMAND_CHANGE_ADDRESS 0xC7
 
 void setup()
 {
-  pinMode(7, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Play track 1");
 
-  //Serial.begin(9600);
-  //Serial.println("WS2003 Control Example");
+  Wire.begin();
 
-  mp3.begin(9600); //WS2003S communicates at 9600bps
+  //mp3Command(COMMAND_CHANGE_ADDRESS, 20); //Change address to 20
+  mp3Address = 20;
 
-  //300ms between commands
+  mp3Command(COMMAND_PLAY_TRACK, 1); //Play track
+  mp3Command(COMMAND_CHANGE_EQ, 5); //Change equalizer to bass
+  
+  //mp3Command(COMMAND_CHANGE_VOLUME, 15); //Change volume
+  //mp3Command(COMMAND_PLAY_FILENUMBER, 6); //Play file F006xxx.mp3
 
-  byte response;
+  //delay(3000);
+  mp3Command(COMMAND_PLAY_NEXT);
+  //delay(4000);
+  mp3Command(COMMAND_PLAY_NEXT);
 
-  response = stopPlaying();
-  Serial.print("Response 0x:");
-  Serial.println(response, HEX);
-
-  response = setVolume(15);
-  Serial.print("Response 0x:");
-  Serial.println(response, HEX);
-
-  response = setEQ(5); //Set to bass EQ
-  Serial.print("Response 0x:");
-  Serial.println(response, HEX);
-
-  response = playTrackNumber(4);
-  Serial.print("Response 0x:");
-  Serial.println(response, HEX);
+  /*byte status = mp3Status();
+  if(status == 0x00)
+  {
+    Serial.println("QMP3 OK");
+  }
+  else if(status == 0x01)
+  {
+    Serial.println("Command failed");
+  }
+  else
+  {
+    Serial.print("Status: ");
+    Serial.println(status);
+  }*/
 }
 
 void loop()
 {
-  //if (isPlaying()) Serial.println("Playing...");
-
-  digitalWrite(7, HIGH);
-  delay(1000);
-  digitalWrite(7, LOW);
-  delay(1000);
 }
 
-//Play a track # from the root directory
-byte playTrackNumber(unsigned int trackNumber)
+//Send command to Qwiic MP3
+boolean mp3Command(byte command, byte option)
 {
-  commandBytes[0] = COMMAND_PLAY_INDEX_IN_ROOT;
-  commandBytes[1] = trackNumber >> 8; //MSB
-  commandBytes[2] = trackNumber & 0xFF; //LSB
-  sendCommand(3);
-  return (getResponse());
+  Wire.beginTransmission(mp3Address);
+  Wire.write(command);
+  Wire.write(option);
+  if (Wire.endTransmission() != 0)
+    return(false); //Sensor did not ACK
+  return(true);
 }
 
-//Set volume. 0 is off. 31 max.
-byte setVolume(byte volumeLevel)
+//Send command to Qwiic MP3
+boolean mp3Command(byte command)
 {
-  if (volumeLevel > 31) volumeLevel = 31; //Error check
-  commandBytes[0] = COMMAND_SET_VOLUME;
-  commandBytes[1] = volumeLevel;
-  sendCommand(2);
-  return (getResponse());
+//  return(mp3Command(command, 0));
+  Wire.beginTransmission(mp3Address);
+  Wire.write(command);
+  if (Wire.endTransmission() != 0)
+    return(false); //Sensor did not ACK
+  return(true);
 }
 
-//Returns the current volume level, 0 to 31
-byte getVolume(void)
+//Get the current status of the Qwiic MP3
+byte mp3Status()
 {
-  commandBytes[0] = COMMAND_GET_VOLUME;
-  commandBytes[1] = 0xC4;
-  sendCommand(2);
-  return (getResponse());
+  Wire.requestFrom(mp3Address, 1);
+
+  if (Wire.available())
+    return (Wire.read());
+
+  Serial.println("Error: Sensor did not respond");
+  return(0);
 }
 
-//Stops playing any current track
-byte stopPlaying(void)
-{
-  commandBytes[0] = COMMAND_STOP;
-  sendCommand(1);
-  return (getResponse());
-}
-
-//Set the equalizer levels to one of 6 levels (normal, pop, rock, jazz, classic, bass)
-byte setEQ(byte eqType)
-{
-  if (eqType > 5) eqType == 0; //Error check. Set to normal by default
-  commandBytes[0] = COMMAND_SET_EQ_MODE;
-  commandBytes[1] = eqType;
-  sendCommand(2);
-  return (getResponse());
-}
-
-boolean isPlaying(void)
-{
-  commandBytes[0] = COMMAND_GET_CURRENT_STATE;
-  sendCommand(1);
-
-  //01: play
-  //02: stop
-  //03: pause
-
-  if (getResponse() == 0x01) return (true);
-  return (false);
-}
-
-//Sends the global command array attaching the start code,
-//end code and CRC
-void sendCommand(byte commandLength)
-{
-  mp3.write(MP3_START_CODE);
-  mp3.write(commandLength + 2); //Add one byte for 'length', one for CRC
-
-  //Begin sending command bytes while calc'ing CRC
-  byte crc = commandLength + 2;
-  for (byte x = 0 ; x < commandLength ; x++) //Length + command code + parameter
-  {
-    mp3.write(commandBytes[x]); //Send this byte
-    crc += commandBytes[x]; //Add this byte to the CRC
-  }
-
-  mp3.write(crc); //Send CRC
-  mp3.write(MP3_END_CODE);
-}
-
-byte getResponse(void)
-{
-  byte counter = 0;
-  while (mp3.available() == false)
-  {
-    delay(1);
-    if (counter++ > 200) return (0xFF); //Timeout
-  }
-
-  byte response = 0xFF;
-  byte i = 0;
-  while (mp3.available())
-  {
-    if (i++ == 0) response = mp3.read();
-  }
-
-  return (response);
-}
 

@@ -5,24 +5,7 @@
   Date: April 23rd, 2018
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  This example shows how to read the PM2.5 and PM10 readings from the sensor
-
-  Available I2C Commands:
-  0x00 : Stop
-  0x01 then 0x03 : Play file named F003.mp3 - limited to 255
-  0x02 then 0x24 : Play file # 36, by index - limited to 255
-  0x03 then 15 : Change volume to 15 (half) - limited to 31
-  0x04 : Play next
-  0x05 : Play previous
-  0x06 then 5 : Change Equalizer Setting to bass - 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
-  0x07 : Get available song count within the root folder
-  0xC7 : Change I2C address
-
-  Return status of last command:
-  0x00 = OK
-  0x01 = Fail, command error, no execution
-  0x02 = No such file
-  0x05 = SD error
+  This example uses a serial menu system to demonstrate the various functions of the Qwiic MP3 player
 
   Play file named T09 from triggers.
 
@@ -38,61 +21,101 @@ byte mp3Address = 0x37; //Unshifted 7-bit default address for Qwiic MP3
 #define COMMAND_STOP 0x00
 #define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names this plays 2nd file in dir.
 #define COMMAND_PLAY_FILENUMBER 0x02 //Play a file # from the root directory: 3 will play F003xxx.mp3
-#define COMMAND_CHANGE_VOLUME 0x03
+#define COMMAND_SET_VOLUME 0x03
 #define COMMAND_PLAY_NEXT 0x04
 #define COMMAND_PLAY_PREVIOUS 0x05
-#define COMMAND_CHANGE_EQ 0x06
+#define COMMAND_SET_EQ 0x06
 #define COMMAND_GET_SONG_COUNT 0x07
 #define COMMAND_GET_SONG_NAME 0x08
 #define COMMAND_GET_PLAY_STATUS 0x09
 #define COMMAND_GET_VERSION 0x0A
-#define COMMAND_CHANGE_ADDRESS 0xC7
+#define COMMAND_SET_ADDRESS 0xC7
+
+byte adjustableNumber = 1;
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("Play track 1");
+  Serial.begin(9600);
 
   Wire.begin();
 
-  //Optional configuration of player
-  mp3ChangeEQ(0); //Set equalizer to normal
-  mp3ChangeVolume(15); //Volume can be 0 (off) to 31 (max)
-  
-  //mp3Command(COMMAND_CHANGE_ADDRESS, 20); //Change address to 20
+  //mp3Command(COMMAND_SET_ADDRESS, 20); //Change address to 20
   //mp3Address = 20;
+
+  mp3ChangeVolume(10); //Volume can be 0 (off) to 31 (max)
 
   Serial.print("Song count: ");
   Serial.println(mp3SongCount());
 
   Serial.print("Firmware version: ");
   Serial.println(mp3GetVersion());
-
-  mp3PlayTrack(5); //Play track number 1
-  //delay(20);
-
-  String songName = mp3SongName();
-  Serial.print("Now playing: ");
-  Serial.println(songName);
-  
-  //mp3Command(COMMAND_PLAY_FILENUMBER, 6); //Play file F006xxx.mp3
-
-  delay(3000);
-  Serial.println("Playing next");
-  mp3PlayNext();
 }
 
 void loop()
 {
-  //Check to see when track is done playing
-  if(mp3IsPlaying())
+  Serial.println();
+  Serial.println("Qwiic MP3 Menu");
+  Serial.println("Press +/- to adjust the number");
+  Serial.println("This number is then used for any sub menu, like track # or volume level");
+  Serial.print("Number: ");
+  Serial.println(adjustableNumber);
+  Serial.println();
+
+  if(mp3IsPlaying() == true)
   {
     String songName = mp3SongName();
     Serial.print("Now playing: ");
     Serial.println(songName);
   }
-  else Serial.println("No song");
-  delay(1000);
+  
+  Serial.println("1) Play track");
+  Serial.println("2) Play file");
+  Serial.println("3) Play next");
+  Serial.println("4) Play previous");
+  Serial.println("5) Stop");
+  Serial.println("6) Set volume");
+  Serial.println("7) Set EQ");
+  Serial.println("8) Set I2C Address");
+
+  while(Serial.available() == false) delay(10);
+
+  byte incoming = Serial.read();
+
+  switch(incoming)
+  {
+    case '1':
+      mp3PlayTrack(adjustableNumber);
+      break;
+    case '2':
+      mp3PlayFile(adjustableNumber);
+      break;
+    case '3':
+      mp3PlayNext();
+      break;
+    case '4':
+      mp3PlayPrevious();
+      break;
+    case '5':
+      mp3Stop();
+      break;
+    case '6':
+      mp3ChangeVolume(adjustableNumber); //Volume can be 0 (off) to 31 (max)
+      break;
+    case '7':
+      mp3ChangeEQ(adjustableNumber); //EQ is 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
+      break;
+    case '+':
+      adjustableNumber++;
+      break;
+    case '-':
+      adjustableNumber--;
+      break;
+    default:
+      Serial.print("Unknown: ");
+      Serial.write(incoming);
+      Serial.println();
+      break;
+  }
 }
 
 //Checks the status of the player to see if MP3 is playing
@@ -101,8 +124,8 @@ boolean mp3IsPlaying()
 {
   mp3Command(COMMAND_GET_PLAY_STATUS);
 
-  delay(10); //Wait for ATtiny to query the MP3 IC
-  
+  delay(20); //Give the QMP3 time to get the name from MP3 IC before we ask for it
+
   //01: play, 02: stop, 03: pause
   byte playStatus = mp3GetResponse();
   if(playStatus == 0x01) return(true);
@@ -117,11 +140,24 @@ void mp3PlayTrack(byte trackNumber)
   mp3Command(COMMAND_PLAY_TRACK, trackNumber); //Play track  
 }
 
+//Plays a file that has been named specifically. 
+//For example: passing in 6 will play F006xxx.mp3
+void mp3PlayFile(byte fileNumber)
+{
+  mp3Command(COMMAND_PLAY_FILENUMBER, fileNumber); //Play file number  
+}
+
+//Stop playing the current track
+void mp3Stop()
+{
+  mp3Command(COMMAND_STOP);
+}
+
 //Change the equalizer to one of 6 types
 void mp3ChangeEQ(byte eqType)
 {
   //0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
-  mp3Command(COMMAND_CHANGE_EQ, eqType); //Change equalizer to bass
+  mp3Command(COMMAND_SET_EQ, eqType); //Change equalizer to bass
 }
 
 //Get the current status of the Qwiic MP3
@@ -136,8 +172,7 @@ String mp3SongName()
   String thisSongName = "";
   mp3Command(COMMAND_GET_SONG_NAME);
 
-  //We have to give the QMP3 a few ms to get the name before we ask for it
-  delay(20);
+  delay(50); //Give the QMP3 time to get the name from MP3 IC before we ask for it
 
   Wire.requestFrom(mp3Address, 8); //Song names are max 8 chars
 
@@ -145,7 +180,6 @@ String mp3SongName()
   {
     thisSongName += (char)Wire.read();
   }
-  
   return(thisSongName);
 }
 
@@ -160,7 +194,7 @@ byte mp3SongCount()
 //Change volume to zero (off) to 31 (max)
 void mp3ChangeVolume(byte volumeLevel)
 {
-  mp3Command(COMMAND_CHANGE_VOLUME, volumeLevel); //Change volume
+  mp3Command(COMMAND_SET_VOLUME, volumeLevel); //Change volume
 }
 
 //Play the next track

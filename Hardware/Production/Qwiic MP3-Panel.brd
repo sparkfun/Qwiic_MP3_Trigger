@@ -12,7 +12,7 @@
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="16" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="14" fill="1" visible="yes" active="yes"/>
@@ -39,13 +39,19 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="yes"/>
 <layer number="51" name="tDocu" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="no" active="yes"/>
+<layer number="91" name="Nets" color="2" fill="1" visible="no" active="no"/>
+<layer number="92" name="Busses" color="1" fill="1" visible="no" active="no"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="no" active="no"/>
+<layer number="94" name="Symbols" color="4" fill="1" visible="no" active="no"/>
+<layer number="95" name="Names" color="7" fill="1" visible="no" active="no"/>
+<layer number="96" name="Values" color="7" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
 <layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
@@ -57,12 +63,6 @@
 <layer number="88" name="SimResults" color="9" fill="1" visible="no" active="no"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="no" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="no" active="no"/>
-<layer number="91" name="Nets" color="2" fill="1" visible="no" active="no"/>
-<layer number="92" name="Busses" color="1" fill="1" visible="no" active="no"/>
-<layer number="93" name="Pins" color="2" fill="1" visible="no" active="no"/>
-<layer number="94" name="Symbols" color="4" fill="1" visible="no" active="no"/>
-<layer number="95" name="Names" color="7" fill="1" visible="no" active="no"/>
-<layer number="96" name="Values" color="7" fill="1" visible="no" active="no"/>
 <layer number="97" name="Info" color="7" fill="1" visible="no" active="no"/>
 <layer number="98" name="Guide" color="6" fill="1" visible="no" active="no"/>
 <layer number="99" name="SpiceOrder" color="7" fill="1" visible="no" active="no"/>
@@ -153,6 +153,8 @@
 <text x="22.733" y="44.45" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="7.63" y1="48.92" x2="17.7" y2="50.14" layer="21"/>
 <rectangle x1="7.63" y1="48.92" x2="17.62" y2="50.14" layer="22" rot="R180"/>
+<text x="17.018" y="30.099" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="20.32" y1="43.18" x2="22.86" y2="44.45" layer="41"/>
 <text x="-2.286" y="25.4" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="29.972" y1="0" x2="29.972" y2="50.8" width="0.2032" layer="20"/>
 <wire x1="29.972" y1="50.8" x2="55.372" y2="50.8" width="0.2032" layer="20"/>
@@ -161,6 +163,8 @@
 <text x="52.705" y="44.45" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="37.602" y1="48.92" x2="47.672" y2="50.14" layer="21"/>
 <rectangle x1="37.602" y1="48.92" x2="47.592" y2="50.14" layer="22" rot="R180"/>
+<text x="46.99" y="30.099" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="50.292" y1="43.18" x2="52.832" y2="44.45" layer="41"/>
 <text x="27.686" y="25.4" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="59.944" y1="0" x2="59.944" y2="50.8" width="0.2032" layer="20"/>
 <wire x1="59.944" y1="50.8" x2="85.344" y2="50.8" width="0.2032" layer="20"/>
@@ -169,6 +173,8 @@
 <text x="82.677" y="44.45" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="67.574" y1="48.92" x2="77.644" y2="50.14" layer="21"/>
 <rectangle x1="67.574" y1="48.92" x2="77.564" y2="50.14" layer="22" rot="R180"/>
+<text x="76.962" y="30.099" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="80.264" y1="43.18" x2="82.804" y2="44.45" layer="41"/>
 <text x="57.658" y="25.4" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="89.916" y1="0" x2="89.916" y2="50.8" width="0.2032" layer="20"/>
 <wire x1="89.916" y1="50.8" x2="115.316" y2="50.8" width="0.2032" layer="20"/>
@@ -177,6 +183,8 @@
 <text x="112.649" y="44.45" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="97.546" y1="48.92" x2="107.616" y2="50.14" layer="21"/>
 <rectangle x1="97.546" y1="48.92" x2="107.536" y2="50.14" layer="22" rot="R180"/>
+<text x="106.934" y="30.099" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="110.236" y1="43.18" x2="112.776" y2="44.45" layer="41"/>
 <text x="87.63" y="25.4" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <text x="117.602" y="25.4" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="0" y1="51.308" x2="0" y2="102.108" width="0.2032" layer="20"/>
@@ -186,6 +194,8 @@
 <text x="22.733" y="95.758" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="7.63" y1="100.228" x2="17.7" y2="101.448" layer="21"/>
 <rectangle x1="7.63" y1="100.228" x2="17.62" y2="101.448" layer="22" rot="R180"/>
+<text x="17.018" y="81.407" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="20.32" y1="94.488" x2="22.86" y2="95.758" layer="41"/>
 <text x="-2.286" y="76.708" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="29.972" y1="51.308" x2="29.972" y2="102.108" width="0.2032" layer="20"/>
 <wire x1="29.972" y1="102.108" x2="55.372" y2="102.108" width="0.2032" layer="20"/>
@@ -194,6 +204,8 @@
 <text x="52.705" y="95.758" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="37.602" y1="100.228" x2="47.672" y2="101.448" layer="21"/>
 <rectangle x1="37.602" y1="100.228" x2="47.592" y2="101.448" layer="22" rot="R180"/>
+<text x="46.99" y="81.407" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="50.292" y1="94.488" x2="52.832" y2="95.758" layer="41"/>
 <text x="27.686" y="76.708" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="59.944" y1="51.308" x2="59.944" y2="102.108" width="0.2032" layer="20"/>
 <wire x1="59.944" y1="102.108" x2="85.344" y2="102.108" width="0.2032" layer="20"/>
@@ -202,6 +214,8 @@
 <text x="82.677" y="95.758" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="67.574" y1="100.228" x2="77.644" y2="101.448" layer="21"/>
 <rectangle x1="67.574" y1="100.228" x2="77.564" y2="101.448" layer="22" rot="R180"/>
+<text x="76.962" y="81.407" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="80.264" y1="94.488" x2="82.804" y2="95.758" layer="41"/>
 <text x="57.658" y="76.708" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="89.916" y1="51.308" x2="89.916" y2="102.108" width="0.2032" layer="20"/>
 <wire x1="89.916" y1="102.108" x2="115.316" y2="102.108" width="0.2032" layer="20"/>
@@ -210,6 +224,8 @@
 <text x="112.649" y="95.758" size="1.27" layer="16" font="vector" ratio="15" rot="MR0" align="center">X02</text>
 <rectangle x1="97.546" y1="100.228" x2="107.616" y2="101.448" layer="21"/>
 <rectangle x1="97.546" y1="100.228" x2="107.536" y2="101.448" layer="22" rot="R180"/>
+<text x="106.934" y="81.407" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="110.236" y1="94.488" x2="112.776" y2="95.758" layer="41"/>
 <text x="87.63" y="76.708" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <text x="117.602" y="76.708" size="1.778" layer="20" font="vector" ratio="15" rot="R90" align="center">Route Out</text>
 <wire x1="-10.922" y1="-0.254" x2="132.588" y2="-0.254" width="0.381" layer="46"/>

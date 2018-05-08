@@ -22,6 +22,81 @@
 byte commandBytes[11]; //Global array to pass MP3 commands around
 //Worst case command may be 0xA3 which could have 8 characters of file name
 
+//Query the total number of music files on the SD card (including sub directories)
+//NOTE: This will cause any current playing song to stop
+unsigned int getSongCount()
+{
+  commandBytes[0] = MP3_COMMAND_GET_SONG_COUNT;
+  sendCommand(1);
+  
+  if(responseAvailable() == false) return(0); //Timeout
+
+  //Get three byte response
+  unsigned int response = 0xFFFF;
+  byte i = 0;
+  while (mp3.available())
+  {
+    byte incoming = mp3.read();
+    if (i == 0) ; //This is throw away value 0xC5
+    else if (i == 1) response = (incoming << 8); //MSB
+    else if (i == 2) response |= incoming; //LSB
+
+    i++;
+    delay(1); //At 9600bps 1 byte takes 0.8ms
+  }
+
+  return (response);
+}
+
+//Query the song name of the current play
+//Caller must provide an array of 9 characters
+void getSongName(char* songName)
+{
+  if(responseAvailable())
+  {
+    while(mp3.available()) //Clear anything sitting in the incoming buffer
+    {
+      byte incoming = mp3.read();
+      Serial.print("0: 0x");
+      Serial.println(incoming, HEX);
+    }
+  }
+
+  commandBytes[0] = MP3_COMMAND_GET_SONG_NAME_PLAYING;
+  sendCommand(1);
+  
+  if(responseAvailable() == false)
+  {
+    Serial.print("?");
+    songName[0] = 'E';
+    songName[1] = 'r';
+    songName[2] = 'r';
+    songName[3] = 'o';
+    songName[4] = 'r';
+    songName[5] = '\0';
+    return;
+  }
+
+  //Get 9 byte response
+  byte i = 0;
+  while (mp3.available())
+  {
+    byte incoming = mp3.read();
+    if (i == 0){ //This is throw away value 0xCB
+      Serial.print("1: 0x");
+      Serial.println(incoming, HEX);
+    }
+    else if (i < 9) songName[i - 1] = incoming;
+
+    i++;
+    delay(10); //At 9600bps 1 byte takes 0.8ms
+  }
+  songName[8] = '\0'; //Terminate this string
+
+  Serial.print("\nP:");
+  Serial.println(songName);
+}
+
 //Play a given track number. This is a number of listed MP3s in the root directory.
 //User can arrange the MP3s however. Not necessarily in alpha-order.
 //Does nothing if file is not available
@@ -80,17 +155,13 @@ byte setVolume(byte volumeLevel)
 byte getVolume(void)
 {
   commandBytes[0] = MP3_COMMAND_GET_VOLUME;
-  commandBytes[1] = 0xC4;
-  sendCommand(2);
-  return (getResponse());
-}
-
-//Stops playing any current track
-byte stopPlaying(void)
-{
-  commandBytes[0] = MP3_COMMAND_STOP;
   sendCommand(1);
-  return (getResponse());
+  
+  //Get two byte response
+  unsigned int volLevel = getTwoByteResponse();
+  
+  //First byte is 0xC1, second bye is volume level
+  return (volLevel & 0xFF);
 }
 
 //Set the equalizer levels to one of 6 levels (normal, pop, rock, jazz, classic, bass)
@@ -116,6 +187,30 @@ boolean isPlaying(void)
   return (false);
 }
 
+//Play next track
+byte playNext(void)
+{
+  commandBytes[0] = MP3_COMMAND_NEXT;
+  sendCommand(1);
+  return (getResponse());
+}
+
+//Play previous track
+byte playPrevious(void)
+{
+  commandBytes[0] = MP3_COMMAND_PREVIOUS;
+  sendCommand(1);
+  return (getResponse());
+}
+
+//Stops playing any current track
+byte stopPlaying(void)
+{
+  commandBytes[0] = MP3_COMMAND_STOP;
+  sendCommand(1);
+  return (getResponse());
+}
+
 //Sends the global command array attaching the start code,
 //end code and CRC
 void sendCommand(byte commandLength)
@@ -137,12 +232,7 @@ void sendCommand(byte commandLength)
 
 byte getResponse(void)
 {
-  byte counter = 0;
-  while (mp3.available() == false)
-  {
-    delay(1);
-    if (counter++ > 200) return (0xFF); //Timeout
-  }
+  if(responseAvailable() == false) return(0xFF); //Timeout
 
   byte response = 0xFF;
   byte i = 0;
@@ -153,3 +243,36 @@ byte getResponse(void)
 
   return (response);
 }
+
+unsigned int getTwoByteResponse(void)
+{
+  if(responseAvailable() == false) return(0xFF); //Timeout
+
+  unsigned int response = 0xFFFF;
+  byte i = 0;
+  while (mp3.available())
+  {
+    byte incoming = mp3.read();
+
+    if (i == 0) response = incoming << 8; //MSB
+    else if (i == 1) response |= incoming; //LSB
+
+    i++;
+    delay(1); //At 9600bps 1 byte takes 0.8ms
+  }
+
+  return (response);
+}
+
+//Returns true if serial data is available within an alloted amount of time
+boolean responseAvailable()
+{
+  byte counter = 0;
+  while (mp3.available() == false)
+  {
+    delay(1);
+    if (counter++ > 200) return (false); //Timeout
+  }
+  return(true);
+}
+

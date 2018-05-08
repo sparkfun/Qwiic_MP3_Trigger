@@ -1,54 +1,60 @@
 /*
-  Testing the interface on the WT2003S
+  Qwiic MP3 Player
   By: Nathan Seidle
   SparkFun Electronics
   Date: April 23rd, 2018
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  This example shows how to read the PM2.5 and PM10 readings from the sensor
+  An ATtiny84 receives I2C commands from a master and sends/receives commands over serial to the 
+  WT2003S MP3 player IC. Play, stop, next, previous, and volume control are all accessible over
+  I2C. The ATtiny also checks four trigger pins and plays the appropriate track based on which 
+  trigger pins are pulled low.
+  
+  The interrupt pin is active low, open drain. The int pin will go low when a track has completed and
+  will remain low until either a track is played or the status of the Qwiic MP3 is queried.
 
-  I2C Commands to respect:
+  Available I2C Commands:
+  0x00 : Stop
+  0x01 then 0x03 : Play file named F003.mp3 - limited to 255
+  0x02 then 0x24 : Play file # 36, by index - limited to 255
+  0x03 then 15 : Change volume to 15 (half) - limited to 31
+  0x04 : Play next
+  0x05 : Play previous
+  0x06 then 5 : Change Equalizer Setting to bass - 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
+  0x07 : Get available song count within the root folder
+  0xC7 : Change I2C address
 
-  Stop
-  0x00
-
-  Play file named F003.mp3 - limited to 255
-  0x01 + 0x03
-
-  Play file # by index - limited to 255
-  0x02 + 0x24
-
-  Change volume - limited to 31
-  0x03 + 15
-
-  Play next
-  0x04
-
-  Play previous
-  0x05
-
-  Change I2C address
-  0xC7
-
-  Return status of last command:
-  0x00 = OK
+  Reading data after any command:
+  0x00 = OK+Stopped
   0x01 = Fail, command error, no execution
   0x02 = No such file
   0x05 = SD error
+  0x06 = OK+Playing
 
-  Play file named T09 from triggers.
+  There are four trigger pins 1, 2, 3, and 4. Pulling pin 2 low will play 
+  the track named T002.mp3. Pulling pins 1 and 4 low at the same time will
+  play track 5. User must name files T001.mp3 to T010.mp3. These are different
+  files from the F004.mp3 files that are played using the 'play file name' 
+  command over I2C.
 
   TODO:
   Clock stretches until MP3 responds with result. Maybe 10ms?
-  track system Volume to NVM
-  add file count and query
+  -track system Volume to NVM
+  -track system EQ in NVM
+  file count and query
   maybe add debounce to trigger function
+  get playing/stopped into status check
+  get song count
+  300ms between commands
+  firmware version
+
+  Works at 8MHz
 */
 
 #include <SoftwareSerial.h>
 
-SoftwareSerial mp3(6, 7); //RX, TX on dev hardware. 6 to ylw, 7 to blu
-//SoftwareSerial mp3(1, 0); //RX, TX on Tiny
+//SoftwareSerial mp3(6, 4); //RX, TX on dev hardware. 6 to ylw, 4 to blu
+SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 
 #include <Wire.h>
 
@@ -70,11 +76,15 @@ SoftwareSerial mp3(6, 7); //RX, TX on dev hardware. 6 to ylw, 7 to blu
 #define COMMAND_STOP 0x00
 #define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names plays 2nd file in dir.
 #define COMMAND_PLAY_FILENUMBER 0x02 //Play a file # from the root directory: 3 will play F003xxx.mp3
-#define COMMAND_CHANGE_VOLUME 0x03
+#define COMMAND_SET_VOLUME 0x03
 #define COMMAND_PLAY_NEXT 0x04
 #define COMMAND_PLAY_PREVIOUS 0x05
-#define COMMAND_CHANGE_EQ 0x06
-#define COMMAND_CHANGE_ADDRESS 0xC7
+#define COMMAND_SET_EQ 0x06
+#define COMMAND_GET_SONG_COUNT 0x07 //Note: This causes song to stop playing
+#define COMMAND_GET_SONG_NAME 0x08 //Fill global array with 8 characters of the song name
+#define COMMAND_GET_PLAY_STATUS 0x09
+#define COMMAND_GET_VERSION 0x0A
+#define COMMAND_SET_ADDRESS 0xC7
 
 #define SYSTEM_STATUS_OK 0x00
 #define SYSTEM_STATUS_FAIL 0x01
@@ -83,29 +93,46 @@ SoftwareSerial mp3(6, 7); //RX, TX on dev hardware. 6 to ylw, 7 to blu
 
 #define RESPONSE_TYPE_SYSTEM_STATUS 0x00
 #define RESPONSE_TYPE_FILE_COUNT 0x01
+#define RESPONSE_TYPE_SONG_NAME 0x02
+#define RESPONSE_TYPE_PLAY_STATUS 0x03
+#define RESPONSE_TYPE_FIRMWARE_VERSION 0x04
 
+#define TASK_NONE 0x00
+#define TASK_GET_SONG_NAME 0x01
+#define TASK_GET_PLAY_STATUS 0x02
 
+//Firmware version. This is sent when requested. Helpful for tech support.
+const byte firmwareVersionMajor = 1;
+const byte firmwareVersionMinor = 0;
+
+//Hardware pins
 const byte adr = 9; //Address select jumper is on pin 9
 const byte trigger1 = 5; //There are four 'trigger' pins used to trigger the playing of a track
 const byte trigger2 = 10;
 const byte trigger3 = 8;
 const byte trigger4 = 3;
+const byte interruptOutput = 7;
 
 //Variables used in the I2C interrupt so we use volatile
 volatile byte systemStatus = SYSTEM_STATUS_OK; //Tracks the response from the MP3 IC
 volatile byte responseType = RESPONSE_TYPE_SYSTEM_STATUS; //Tracks how to respond based on incoming requests
-volatile byte fileCount = 0;
+volatile char songName[9]; //Loaded with the track name upon request
+volatile byte mainLoopTask = 0; //Tracks a request for tasks that must be done in the main loop
+volatile byte interruptOn = true; //Interrupt turns on when track has completed, turns off when status is read
+volatile byte playStatus = 0; //Tracks the play response. 1=play, 2=stop, 3=pause
 
 volatile byte settingAddress = I2C_ADDRESS_DEFAULT; //The 7-bit I2C address of this QMP3
 volatile byte settingVolume = 0;
 volatile byte settingEQ = 0;
 
+byte songCount = 0; //Tracks how many songs are available to play
 byte oldTriggerNumber = 0; //Tracks trigger state changes
+unsigned long lastCheck = 0; //Tracks the last time we checked if song is playing
 
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("Qwiic MP3 Controller");
+  //Serial.begin(115200);
+  //Serial.println("Qwiic MP3 Controller");
 
   pinMode(adr, INPUT_PULLUP);
 
@@ -114,19 +141,18 @@ void setup()
   pinMode(trigger3, INPUT_PULLUP);
   pinMode(trigger4, INPUT_PULLUP);
 
+  pinMode(interruptOutput, INPUT); //Go to high impedance, indicating no interrupt
+
   readSystemSettings(); //Load all system settings from EEPROM
 
   mp3.begin(9600); //WS2003S communicates at 9600bps
 
   systemStatus = stopPlaying(); //On power on, stop any playing MP3
+  songCount = getSongCount(); //Pre-load the number of songs available
   systemStatus = setVolume(settingVolume); //Go to the volume stored in system settings
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
 
-  //Begin listening on I2C only after we've setup all our config and opened any files
-  startI2C(); //Determine the I2C address we should be using and begin listening on I2C bus
-
-  //300ms between commands
-  Serial.print("QMP3 Address: 0x");
+  /*Serial.print("QMP3 Address: 0x");
   Serial.println(settingAddress, HEX);
 
   if (systemStatus == 0x00)
@@ -135,17 +161,37 @@ void setup()
   {
     Serial.print("No MP3 found: 0x");
     Serial.println(systemStatus, HEX);
-  }
+  }*/
+
+  //Begin listening on I2C only after we've setup all our config and opened any files
+  startI2C(); //Determine the I2C address we should be using and begin listening on I2C bus
 }
 
 void loop()
 {
+  //We can't do serial receive during the I2C interrupt so we do anything that
+  //requires a response to a command
+  if(mainLoopTask == TASK_GET_SONG_NAME)
+  {
+    getSongName(); //Load current song name into global array
+    mainLoopTask = TASK_NONE; //Reset task to nothing
+    responseType = RESPONSE_TYPE_SONG_NAME; //Change response type
+  }
+  else if(mainLoopTask == TASK_GET_PLAY_STATUS)
+  {
+    playStatus = getPlayStatus();
+    mainLoopTask = TASK_NONE; //Reset task to nothing
+    responseType = RESPONSE_TYPE_PLAY_STATUS; //Change response type
+  }
+  
   //Check trigger pins and act accordingly
   if (digitalRead(trigger1) == LOW ||
       digitalRead(trigger2) == LOW ||
       digitalRead(trigger3) == LOW ||
       digitalRead(trigger4) == LOW)
   {
+    delay(100); // Debounce/Wait a long time in case user is pulling other pins low
+    
     byte fileNumber = 0;
     if (digitalRead(trigger1) == LOW) fileNumber += 1;
     if (digitalRead(trigger2) == LOW) fileNumber += 2;
@@ -164,11 +210,27 @@ void loop()
 
       oldTriggerNumber = fileNumber; //Update the state so we don't play this again
     }
-
   }
   else
   {
     oldTriggerNumber = 0;
+  }
+
+  //Every 100ms check to see if we're done playing the song
+  //If so, set the interrupt pin low
+  if (interruptOn == false)
+  {
+    if (millis() - lastCheck > 1000)
+    {
+      lastCheck = millis();
+      
+      if (isPlaying() == false)
+      {
+        interruptOn = true;
+        pinMode(interruptOutput, OUTPUT);
+        digitalWrite(interruptOutput, LOW);
+      }
+    }
   }
 }
 
@@ -180,7 +242,7 @@ void receiveEvent(int numberOfBytesReceived)
   //Record bytes to local array
   byte incoming = Wire.read();
 
-  if (incoming == COMMAND_CHANGE_ADDRESS) //Set new I2C address
+  if (incoming == COMMAND_SET_ADDRESS) //Set new I2C address
   {
     if (Wire.available())
     {
@@ -202,23 +264,27 @@ void receiveEvent(int numberOfBytesReceived)
   }
   else if (incoming == COMMAND_PLAY_TRACK)
   {
-    Serial.print("T");
     if (Wire.available())
     {
       byte trackNumber = Wire.read();
       systemStatus = playTrackNumber(trackNumber);
+
+      interruptOn = false; //Once a track has started playing, interrupt should turn off
+      pinMode(interruptOutput, INPUT); //Go to high impedance
     }
   }
   else if (incoming == COMMAND_PLAY_FILENUMBER)
   {
-    Serial.print("N");
     if (Wire.available())
     {
       byte fileNumber = Wire.read();
       systemStatus = playFileName(fileNumber); //For example 3 will play F003xxx.mp3
+
+      interruptOn = false; //Once a track has started playing, interrupt should turn off
+      pinMode(interruptOutput, INPUT); //Go to high impedance
     }
   }
-  else if (incoming == COMMAND_CHANGE_VOLUME)
+  else if (incoming == COMMAND_SET_VOLUME)
   {
     if (Wire.available())
     {
@@ -236,12 +302,18 @@ void receiveEvent(int numberOfBytesReceived)
   else if (incoming == COMMAND_PLAY_NEXT)
   {
     systemStatus = playNext();
+
+    interruptOn = false; //Once a track has started playing, interrupt should turn off
+    pinMode(interruptOutput, INPUT); //Go to high impedance
   }
   else if (incoming == COMMAND_PLAY_PREVIOUS)
   {
     systemStatus = playPrevious();
+
+    interruptOn = false; //Once a track has started playing, interrupt should turn off
+    pinMode(interruptOutput, INPUT); //Go to high impedance
   }
-  else if (incoming == COMMAND_CHANGE_EQ)
+  else if (incoming == COMMAND_SET_EQ)
   {
     if (Wire.available())
     {
@@ -256,6 +328,24 @@ void receiveEvent(int numberOfBytesReceived)
       systemStatus = setEQ(settingEQ); //Go to this equalizer setting
     }
   }
+  else if (incoming == COMMAND_GET_SONG_COUNT)
+  {
+    //Count is loaded at setup()
+    
+    responseType = RESPONSE_TYPE_FILE_COUNT; //Change response type
+  }
+  else if (incoming == COMMAND_GET_SONG_NAME)
+  {
+    mainLoopTask = TASK_GET_SONG_NAME; //The name is requested in the main loop
+  }
+  else if (incoming == COMMAND_GET_PLAY_STATUS)
+  {
+    mainLoopTask = TASK_GET_PLAY_STATUS; //The status is requested in the main loop
+  }
+  else if (incoming == COMMAND_GET_VERSION)
+  {
+    responseType = RESPONSE_TYPE_FIRMWARE_VERSION;
+  }
 
 }
 
@@ -267,12 +357,31 @@ void requestEvent()
 {
   if (responseType == RESPONSE_TYPE_FILE_COUNT)
   {
-    Wire.write(fileCount);
+    Wire.write(songCount);
   }
-  else //By default we respond with the last event from the MP3
+  else if (responseType == RESPONSE_TYPE_SONG_NAME)
+  {
+    Wire.write((char *)songName, 8);
+  }
+  else if (responseType == RESPONSE_TYPE_PLAY_STATUS)
+  {
+    Wire.write(playStatus);
+  }
+  else if (responseType == RESPONSE_TYPE_FIRMWARE_VERSION)
+  {
+    Wire.write(firmwareVersionMajor);
+    Wire.write(firmwareVersionMinor);
+  }
+  else //By default we respond with the result from the last operation
   {
     Wire.write(systemStatus);
   }
+
+  responseType = RESPONSE_TYPE_SYSTEM_STATUS; //Reset response type
+
+  //Clear the interrupt pin once user has requested something
+  interruptOn = false;
+  pinMode(interruptOutput, INPUT); //Go to high impedance
 }
 
 //Reads the current system settings from EEPROM

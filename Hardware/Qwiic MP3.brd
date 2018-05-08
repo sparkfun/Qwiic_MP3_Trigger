@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.0.0">
+<eagle version="7.7.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
-<setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.005" altunitdist="inch" altunit="inch"/>
@@ -13,7 +12,7 @@
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="16" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="14" fill="1" visible="yes" active="yes"/>
@@ -40,12 +39,12 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="yes"/>
-<layer number="51" name="tDocu" color="6" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="no" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="no" active="no"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="no" active="no"/>
@@ -167,6 +166,7 @@
 <rectangle x1="7.63" y1="48.92" x2="17.7" y2="50.14" layer="21"/>
 <rectangle x1="7.63" y1="48.92" x2="17.62" y2="50.14" layer="22" rot="R180"/>
 <text x="17.018" y="30.099" size="0.508" layer="27" font="vector" ratio="15" rot="R90">TPA2005D1</text>
+<rectangle x1="20.32" y1="43.18" x2="22.86" y2="44.45" layer="41"/>
 </plain>
 <libraries>
 <library name="SparkFun">
@@ -5669,11 +5669,10 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <param name="slThermalsForVias" value="0"/>
 <param name="dpMaxLengthDifference" value="10mm"/>
 <param name="dpGapFactor" value="2.5"/>
+<param name="checkGrid" value="0"/>
 <param name="checkAngle" value="1"/>
 <param name="checkFont" value="1"/>
 <param name="checkRestrict" value="0"/>
-<param name="checkStop" value="0"/>
-<param name="checkValues" value="0"/>
 <param name="useDiameter" value="13"/>
 <param name="maxErrors" value="50"/>
 </designrules>
@@ -6666,23 +6665,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="10.795" y1="23.12" x2="10.795" y2="24.003" width="0.1524" layer="1"/>
 </signal>
 </signals>
-<errors>
-<approved hash="5,1,7b4183d4acb55a20"/>
-<approved hash="5,1,53a1a57d8a1c72c0"/>
-<approved hash="4,1,2fcff934a7407e1c"/>
-<approved hash="4,1,ba3258691ab6e40e"/>
-<approved hash="4,1,71acd62d5470ff91"/>
-<approved hash="19,1,6ddfe735eb779cbc"/>
-<approved hash="19,1,cececfe3071f0632"/>
-<approved hash="19,1,5d32323d1647856f"/>
-<approved hash="19,1,603ae78fefb79425"/>
-<approved hash="19,1,69b8b6ab4ef89369"/>
-<approved hash="19,1,63b3d8a020f39962"/>
-<approved hash="19,1,bf582acbd0994788"/>
-<approved hash="19,1,8d5770c48a947585"/>
-<approved hash="19,1,5449328716198df6"/>
-<approved hash="4,1,6d14e68564e8e339"/>
-</errors>
 </board>
 </drawing>
 </eagle>

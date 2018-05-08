@@ -4,8 +4,8 @@ Thumbs.db
 /TestMP3s/*.*
 
 #Eagle Backup files
-*.b#?
 *.s#?
+*.b#?
 *.l#?
 *.lck
 

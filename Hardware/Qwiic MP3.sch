@@ -12583,7 +12583,7 @@ Note:  SparkFun currenly only uses the QFN style part</description>
 <text x="74.803" y="75.311" size="1.778" layer="97" rot="R90">Power</text>
 <text x="156.718" y="99.06" size="1.778" layer="97">7-Bit Unshifted I2C Address
 Open Jumper (Default): 0x37
-Closed Jumper: 0x38
+Closed Jumper: 0x36
 Software configurable as well</text>
 <text x="215.773" y="164.211" size="1.778" layer="97">I2C Pull Ups</text>
 <text x="102.235" y="57.912" size="1.778" layer="97">Button Triggers</text>

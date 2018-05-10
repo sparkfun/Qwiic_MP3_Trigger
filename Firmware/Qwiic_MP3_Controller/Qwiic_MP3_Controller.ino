@@ -5,11 +5,11 @@
   Date: April 23rd, 2018
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  An ATtiny84 receives I2C commands from a master and sends/receives commands over serial to the 
+  An ATtiny84 receives I2C commands from a master and sends/receives commands over serial to the
   WT2003S MP3 player IC. Play, stop, next, previous, and volume control are all accessible over
-  I2C. The ATtiny also checks four trigger pins and plays the appropriate track based on which 
+  I2C. The ATtiny also checks four trigger pins and plays the appropriate track based on which
   trigger pins are pulled low.
-  
+
   The interrupt pin is active low, open drain. The int pin will go low when a track has completed and
   will remain low until either a track is played or the status of the Qwiic MP3 is queried.
 
@@ -22,39 +22,35 @@
   0x05 : Play previous
   0x06 then 5 : Change Equalizer Setting to bass - 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
   0x07 : Get available song count within the root folder
+  0x08 : Get song name : Returns an array of 8 bytes
+  0x09 : Get play status : 1=playing, 2=stopped, 3=paused
+  0x0A : Get firmware version : 2 bytes, upper ver and lower ver
   0xC7 : Change I2C address
 
   Reading data after any command:
-  0x00 = OK+Stopped
+  0x00 = OK
   0x01 = Fail, command error, no execution
   0x02 = No such file
   0x05 = SD error
-  0x06 = OK+Playing
 
-  There are four trigger pins 1, 2, 3, and 4. Pulling pin 2 low will play 
+  There are four trigger pins 1, 2, 3, and 4. Pulling pin 2 low will play
   the track named T002.mp3. Pulling pins 1 and 4 low at the same time will
   play track 5. User must name files T001.mp3 to T010.mp3. These are different
-  files from the F004.mp3 files that are played using the 'play file name' 
+  files from the F004.mp3 files that are played using the 'play file name'
   command over I2C.
 
   TODO:
-  Clock stretches until MP3 responds with result. Maybe 10ms?
-  -track system Volume to NVM
-  -track system EQ in NVM
-  file count and query
-  maybe add debounce to trigger function
-  get playing/stopped into status check
-  get song count
-  300ms between commands
-  firmware version
 
   Works at 8MHz
 */
 
 #include <SoftwareSerial.h>
 
+//#if defined(__AVR_ATmega328P__)
 //SoftwareSerial mp3(6, 4); //RX, TX on dev hardware. 6 to ylw, 4 to blu
+//#else
 SoftwareSerial mp3(1, 0); //RX, TX on Tiny
+//#endif
 
 #include <Wire.h>
 
@@ -70,20 +66,22 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 
 //There is an ADR jumpber on this board. When closed, forces I2C address to a given address.
 #define I2C_ADDRESS_DEFAULT 0x37
-#define I2C_ADDRESS_JUMPER_CLOSED 0x38
+#define I2C_ADDRESS_JUMPER_CLOSED 0x36
 
 //These are the commands we understand and may respond to
 #define COMMAND_STOP 0x00
 #define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names plays 2nd file in dir.
 #define COMMAND_PLAY_FILENUMBER 0x02 //Play a file # from the root directory: 3 will play F003xxx.mp3
-#define COMMAND_SET_VOLUME 0x03
+#define COMMAND_PAUSE 0x03 //Will pause if playing, or starting playing if paused
 #define COMMAND_PLAY_NEXT 0x04
 #define COMMAND_PLAY_PREVIOUS 0x05
 #define COMMAND_SET_EQ 0x06
-#define COMMAND_GET_SONG_COUNT 0x07 //Note: This causes song to stop playing
-#define COMMAND_GET_SONG_NAME 0x08 //Fill global array with 8 characters of the song name
-#define COMMAND_GET_PLAY_STATUS 0x09
-#define COMMAND_GET_VERSION 0x0A
+#define COMMAND_SET_VOLUME 0x07
+#define COMMAND_GET_SONG_COUNT 0x08 //Note: This causes song to stop playing
+#define COMMAND_GET_SONG_NAME 0x09 //Fill global array with 8 characters of the song name
+#define COMMAND_GET_PLAY_STATUS 0x0A
+#define COMMAND_GET_CARD_STATUS 0x0B
+#define COMMAND_GET_VERSION 0x0C
 #define COMMAND_SET_ADDRESS 0xC7
 
 #define SYSTEM_STATUS_OK 0x00
@@ -92,14 +90,16 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 #define SYSTEM_STATUS_SD_ERROR 0x05
 
 #define RESPONSE_TYPE_SYSTEM_STATUS 0x00
-#define RESPONSE_TYPE_FILE_COUNT 0x01
+#define RESPONSE_TYPE_SONG_COUNT 0x01
 #define RESPONSE_TYPE_SONG_NAME 0x02
 #define RESPONSE_TYPE_PLAY_STATUS 0x03
-#define RESPONSE_TYPE_FIRMWARE_VERSION 0x04
+#define RESPONSE_TYPE_CARD_STATUS 0x04
+#define RESPONSE_TYPE_FIRMWARE_VERSION 0x05
 
 #define TASK_NONE 0x00
 #define TASK_GET_SONG_NAME 0x01
-#define TASK_GET_PLAY_STATUS 0x02
+#define TASK_GET_SONG_COUNT 0x02
+#define TASK_GET_PLAY_STATUS 0x03
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
@@ -112,6 +112,7 @@ const byte trigger2 = 10;
 const byte trigger3 = 8;
 const byte trigger4 = 3;
 const byte interruptOutput = 7;
+const byte playing = 2;
 
 //Variables used in the I2C interrupt so we use volatile
 volatile byte systemStatus = SYSTEM_STATUS_OK; //Tracks the response from the MP3 IC
@@ -120,6 +121,7 @@ volatile char songName[9]; //Loaded with the track name upon request
 volatile byte mainLoopTask = 0; //Tracks a request for tasks that must be done in the main loop
 volatile byte interruptOn = true; //Interrupt turns on when track has completed, turns off when status is read
 volatile byte playStatus = 0; //Tracks the play response. 1=play, 2=stop, 3=pause
+volatile byte cardStatus = 0; //Tracks if a card is detected or not
 
 volatile byte settingAddress = I2C_ADDRESS_DEFAULT; //The 7-bit I2C address of this QMP3
 volatile byte settingVolume = 0;
@@ -131,10 +133,8 @@ unsigned long lastCheck = 0; //Tracks the last time we checked if song is playin
 
 void setup()
 {
-  //Serial.begin(115200);
-  //Serial.println("Qwiic MP3 Controller");
-
   pinMode(adr, INPUT_PULLUP);
+  pinMode(playing, INPUT_PULLUP);
 
   pinMode(trigger1, INPUT_PULLUP);
   pinMode(trigger2, INPUT_PULLUP);
@@ -147,12 +147,23 @@ void setup()
 
   mp3.begin(9600); //WS2003S communicates at 9600bps
 
-  systemStatus = stopPlaying(); //On power on, stop any playing MP3
-  songCount = getSongCount(); //Pre-load the number of songs available
-  systemStatus = setVolume(settingVolume); //Go to the volume stored in system settings
+  //Verify connection to MP3 IC. But give up after 1000ms
+  byte counter = 0;
+  while(counter++ < 100)
+  {
+    clearBuffer();
+    systemStatus = stopPlaying(); //On power on, stop any playing MP3
+    if(systemStatus == 0x00) break; //IC responded OK
+    noIntDelay(10);
+  }
+  
+  setVolume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
 
-  /*Serial.print("QMP3 Address: 0x");
+#if defined(__AVR_ATmega328P__)
+/*  Serial.begin(115200);
+  Serial.println("Qwiic MP3 Controller");
+  Serial.print("QMP3 Address: 0x");
   Serial.println(settingAddress, HEX);
 
   if (systemStatus == 0x00)
@@ -162,6 +173,7 @@ void setup()
     Serial.print("No MP3 found: 0x");
     Serial.println(systemStatus, HEX);
   }*/
+#endif
 
   //Begin listening on I2C only after we've setup all our config and opened any files
   startI2C(); //Determine the I2C address we should be using and begin listening on I2C bus
@@ -171,46 +183,55 @@ void loop()
 {
   //We can't do serial receive during the I2C interrupt so we do anything that
   //requires a response to a command
-  if(mainLoopTask == TASK_GET_SONG_NAME)
+  if (mainLoopTask == TASK_GET_SONG_NAME)
   {
     getSongName(); //Load current song name into global array
     mainLoopTask = TASK_NONE; //Reset task to nothing
     responseType = RESPONSE_TYPE_SONG_NAME; //Change response type
   }
-  else if(mainLoopTask == TASK_GET_PLAY_STATUS)
+  else if (mainLoopTask == TASK_GET_SONG_COUNT)
   {
-    playStatus = getPlayStatus();
+    songCount = getSongCount();
     mainLoopTask = TASK_NONE; //Reset task to nothing
-    responseType = RESPONSE_TYPE_PLAY_STATUS; //Change response type
+    responseType = RESPONSE_TYPE_SONG_COUNT; //Change response type
   }
-  
+
   //Check trigger pins and act accordingly
   if (digitalRead(trigger1) == LOW ||
       digitalRead(trigger2) == LOW ||
       digitalRead(trigger3) == LOW ||
       digitalRead(trigger4) == LOW)
   {
-    delay(100); // Debounce/Wait a long time in case user is pulling other pins low
-    
+    delay(100); // Debounce/Wait a bit in case user is pulling other pins low
+
     byte fileNumber = 0;
     if (digitalRead(trigger1) == LOW) fileNumber += 1;
     if (digitalRead(trigger2) == LOW) fileNumber += 2;
     if (digitalRead(trigger3) == LOW) fileNumber += 3;
     if (digitalRead(trigger4) == LOW) fileNumber += 4;
 
-    //If no song is playing then allow re-triggering by holding down button or trigger
-    //This will cause songs to repeat as long as trigger is activated
-    if (isPlaying() == false) oldTriggerNumber = 0;
-
-    if (fileNumber != oldTriggerNumber)
+    //Is one of the triggers still activated? More debouncing.
+    if (fileNumber > 0)
     {
-      //We have a new trigger!
-      if (isPlaying()) stopPlaying(); //Stop any currently playing track
-      playTriggerFile(fileNumber); //Ex: 2 will play T002xxx.mp3
+      //If no song is playing then allow re-triggering by holding down button or trigger
+      //This will cause songs to repeat as long as trigger is activated
+      if (isPlaying() == false) oldTriggerNumber = 0;
 
-      oldTriggerNumber = fileNumber; //Update the state so we don't play this again
-    }
-  }
+      if (fileNumber != oldTriggerNumber)
+      {
+        //We have a new trigger!
+        if (isPlaying()) stopPlaying(); //Stop any currently playing track
+        byte result = playTriggerFile(fileNumber); //Ex: 2 will play T002xxx.mp3
+
+#if defined(__AVR_ATmega328P__)
+        //Serial.print("result: 0x");
+        //Serial.println(result, HEX);
+#endif
+
+        oldTriggerNumber = fileNumber; //Update the state so we don't play this again
+      }//End new trigger number
+    }//End fileNumber > 0
+  } //End trigger is low
   else
   {
     oldTriggerNumber = 0;
@@ -220,10 +241,10 @@ void loop()
   //If so, set the interrupt pin low
   if (interruptOn == false)
   {
-    if (millis() - lastCheck > 1000)
+    if (millis() - lastCheck > 100)
     {
       lastCheck = millis();
-      
+
       if (isPlaying() == false)
       {
         interruptOn = true;
@@ -299,6 +320,10 @@ void receiveEvent(int numberOfBytesReceived)
       systemStatus = setVolume(settingVolume); //Go to this volume
     }
   }
+  else if (incoming == COMMAND_PAUSE)
+  {
+    systemStatus = pause();
+  }
   else if (incoming == COMMAND_PLAY_NEXT)
   {
     systemStatus = playNext();
@@ -331,8 +356,8 @@ void receiveEvent(int numberOfBytesReceived)
   else if (incoming == COMMAND_GET_SONG_COUNT)
   {
     //Count is loaded at setup()
-    
-    responseType = RESPONSE_TYPE_FILE_COUNT; //Change response type
+    //responseType = RESPONSE_TYPE_FILE_COUNT; //Change response type
+    mainLoopTask = TASK_GET_SONG_COUNT; //The count is requested in the main loop
   }
   else if (incoming == COMMAND_GET_SONG_NAME)
   {
@@ -340,7 +365,19 @@ void receiveEvent(int numberOfBytesReceived)
   }
   else if (incoming == COMMAND_GET_PLAY_STATUS)
   {
-    mainLoopTask = TASK_GET_PLAY_STATUS; //The status is requested in the main loop
+    playStatus = 0x02; //Stopped
+    if (digitalRead(playing) == HIGH) //Song is playing
+      playStatus = 0x01;
+
+    responseType = RESPONSE_TYPE_PLAY_STATUS; //Change response type
+  }
+  else if (incoming == COMMAND_GET_CARD_STATUS)
+  {
+    cardStatus = 0x01; //Card is good
+    if (setEQ(settingEQ) == 0x05) //0x05 is the no card or corrupt card error
+      cardStatus = 0x00; //No card
+
+    responseType = RESPONSE_TYPE_CARD_STATUS; //Change response type
   }
   else if (incoming == COMMAND_GET_VERSION)
   {
@@ -355,7 +392,7 @@ void receiveEvent(int numberOfBytesReceived)
 //The response type is set during the receiveEvent interrupt
 void requestEvent()
 {
-  if (responseType == RESPONSE_TYPE_FILE_COUNT)
+  if (responseType == RESPONSE_TYPE_SONG_COUNT)
   {
     Wire.write(songCount);
   }
@@ -366,6 +403,10 @@ void requestEvent()
   else if (responseType == RESPONSE_TYPE_PLAY_STATUS)
   {
     Wire.write(playStatus);
+  }
+  else if (responseType == RESPONSE_TYPE_CARD_STATUS)
+  {
+    Wire.write(cardStatus);
   }
   else if (responseType == RESPONSE_TYPE_FIRMWARE_VERSION)
   {

@@ -11713,6 +11713,39 @@ Commonly used for small ceramic capacitors. Like our 0.1uF (http://www.sparkfun.
 </device>
 </devices>
 </deviceset>
+<deviceset name="0.22UF" prefix="C">
+<description>&lt;h3&gt;0.22µF ceramic capacitors&lt;/h3&gt;
+&lt;p&gt;A capacitor is a passive two-terminal electrical component used to store electrical energy temporarily in an electric field.&lt;/p&gt;</description>
+<gates>
+<gate name="G$1" symbol="CAP" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-0603-25V-10%" package="0603">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-07822" constant="no"/>
+<attribute name="VALUE" value="0.22uF" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="-0603-50V-(-20/+80%)" package="0603">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-09885"/>
+<attribute name="VALUE" value="0.22uF"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
 <deviceset name="10UF" prefix="C">
 <description>&lt;h3&gt;10.0µF ceramic capacitors&lt;/h3&gt;
 &lt;p&gt;A capacitor is a passive two-terminal electrical component used to store electrical energy temporarily in an electric field.&lt;/p&gt;</description>
@@ -12535,8 +12568,8 @@ Note:  SparkFun currenly only uses the QFN style part</description>
 <part name="GND30" library="SparkFun" deviceset="GND" device=""/>
 <part name="U$30" library="SparkFun-PowerSymbols" deviceset="5V" device=""/>
 <part name="SUPPLY1" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
-<part name="C3" library="SparkFun-Capacitors" deviceset="10UF" device="-0603-6.3V-20%" value="10uF"/>
-<part name="C6" library="SparkFun-Capacitors" deviceset="10UF" device="-0603-6.3V-20%" value="10uF"/>
+<part name="C3" library="SparkFun-Capacitors" deviceset="0.22UF" device="-0603-25V-10%" value="0.22uF"/>
+<part name="C6" library="SparkFun-Capacitors" deviceset="0.22UF" device="-0603-25V-10%" value="0.22uF"/>
 <part name="C9" library="SparkFun-Capacitors" deviceset="1.0UF-16V-10%(0603)" device="" value="1.0uF"/>
 <part name="SUPPLY20" library="SparkFun-PowerSymbols" deviceset="VCCIO" device=""/>
 <part name="GND18" library="SparkFun" deviceset="GND" device=""/>
@@ -12547,13 +12580,12 @@ Note:  SparkFun currenly only uses the QFN style part</description>
 <plain>
 <text x="170.434" y="11.43" size="2.54" layer="94">N. Seidle</text>
 <text x="237.744" y="7.366" size="2.54" layer="94">X10</text>
-<text x="157.48" y="106.68" size="1.778" layer="97">7-bit unshifted I2C address: 0x60</text>
 <text x="74.803" y="75.311" size="1.778" layer="97" rot="R90">Power</text>
-<text x="156.718" y="99.06" size="1.778" layer="97">I2C Address Selection
+<text x="156.718" y="99.06" size="1.778" layer="97">7-Bit Unshifted I2C Address
 Open Jumper (Default): 0x37
-Closed Jumper: 0x38</text>
+Closed Jumper: 0x38
+Software configurable as well</text>
 <text x="215.773" y="164.211" size="1.778" layer="97">I2C Pull Ups</text>
-<text x="55.88" y="2.54" size="1.27" layer="91">Don't drive INT high, just low (open drain)</text>
 <text x="102.235" y="57.912" size="1.778" layer="97">Button Triggers</text>
 <text x="7.62" y="66.04" size="1.778" layer="97">3.3V VReg prevents USB 5V 
 from being injected onto Qwiic 3.3V</text>

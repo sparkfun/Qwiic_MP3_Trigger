@@ -6,7 +6,7 @@
 #define MP3_COMMAND_STOP 0xAB
 #define MP3_COMMAND_NEXT 0xAC
 #define MP3_COMMAND_PREVIOUS 0xAD
-#define MP3_COMMAND_SET_VOLUME 0xAE
+#define MP3_COMMAND_SET_VOLUME 0xAE //Can take more than 150ms to complete
 #define MP3_COMMAND_SET_EQ_MODE 0xB2
 
 #define MP3_COMMAND_GET_VOLUME 0xC1
@@ -162,8 +162,11 @@ byte setEQ(byte eqType)
 //01: play, 02: stop, 03: pause
 boolean isPlaying(void)
 {
-  if(getPlayStatus() == 0x01) return (true);
+  if(digitalRead(playing) == HIGH) return(true); //Song is playing
   return (false);
+  
+  //if(getPlayStatus() == 0x01) return (true);
+  //return (false);
 }
 
 //Returns the current play/stop/pause status
@@ -173,6 +176,14 @@ byte getPlayStatus(void)
   commandBytes[0] = MP3_COMMAND_GET_CURRENT_STATE;
   sendCommand(1);
   return (getTwoByteResponse() & 0xFF);
+}
+
+//Pause: will pause currently playing track, or starting playing if paused
+byte pause(void)
+{
+  commandBytes[0] = MP3_COMMAND_PAUSE;
+  sendCommand(1);
+  return (getResponse());
 }
 
 //Play next track
@@ -224,7 +235,7 @@ byte getResponse(void)
 {
   if (responseAvailable() == false) return (0xFF); //Timeout
 
-  byte response = 0xFF;
+  byte response = 0xFE;
   byte i = 0;
   while (mp3.available())
   {
@@ -255,6 +266,8 @@ unsigned int getTwoByteResponse(void)
 }
 
 //Returns true if serial data is available within an alloted amount of time
+//The setVolume command at 150ms seems to take the longest amount of time for 
+//the IC to respond.
 boolean responseAvailable()
 {
   byte counter = 0;
@@ -262,7 +275,7 @@ boolean responseAvailable()
   {
     noIntDelay(1); //No delays in interrupts
     
-    if (counter++ > 200) return (false); //Timeout
+    if (counter++ > 250) return (false); //Timeout
   }
   return (true);
 }
@@ -273,7 +286,7 @@ void clearBuffer()
   while (mp3.available()) 
   {
     mp3.read();
-    noIntDelay(1);
+    noIntDelay(1); //1 byte at 9600bps should take 1ms
   }
 }
 
@@ -281,7 +294,11 @@ void noIntDelay(byte amount)
 {
   for(byte y = 0 ; y < amount ; y++)
   {
-    for(unsigned int x = 0 ; x < 1000 ; x++) //1ms at 1MHz
+//#if defined(__AVR_ATmega328P__)
+//    for(unsigned int x = 0 ; x < 3000 ; x++) //1ms at 16MHz. Validated with analyzer
+//#else
+    for(unsigned int x = 0 ; x < 1500 ; x++) //1ms at 8MHz
+//#endif
     {
       __asm__("nop\n\t");
     }

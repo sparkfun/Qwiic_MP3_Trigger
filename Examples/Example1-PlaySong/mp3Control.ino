@@ -1,15 +1,17 @@
 //These are the commands we can send
 #define COMMAND_STOP 0x00
-#define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names this plays 2nd file in dir.
+#define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names plays 2nd file in dir.
 #define COMMAND_PLAY_FILENUMBER 0x02 //Play a file # from the root directory: 3 will play F003xxx.mp3
-#define COMMAND_SET_VOLUME 0x03
+#define COMMAND_PAUSE 0x03 //Will pause if playing, or starting playing if paused
 #define COMMAND_PLAY_NEXT 0x04
 #define COMMAND_PLAY_PREVIOUS 0x05
 #define COMMAND_SET_EQ 0x06
-#define COMMAND_GET_SONG_COUNT 0x07
-#define COMMAND_GET_SONG_NAME 0x08
-#define COMMAND_GET_PLAY_STATUS 0x09
-#define COMMAND_GET_VERSION 0x0A
+#define COMMAND_SET_VOLUME 0x07
+#define COMMAND_GET_SONG_COUNT 0x08 //Note: This causes song to stop playing
+#define COMMAND_GET_SONG_NAME 0x09 //Fill global array with 8 characters of the song name
+#define COMMAND_GET_PLAY_STATUS 0x0A
+#define COMMAND_GET_CARD_STATUS 0x0B
+#define COMMAND_GET_VERSION 0x0C
 #define COMMAND_SET_ADDRESS 0xC7
 
 //Checks the status of the player to see if MP3 is playing
@@ -57,6 +59,16 @@ void mp3ChangeEQ(byte eqType)
 //Get the current status of the Qwiic MP3
 byte mp3Status()
 {
+  return(mp3GetResponse());
+}
+
+//Checks to see if MP3 player has a valid SD card
+boolean mp3HasCard()
+{
+  mp3Command(COMMAND_GET_CARD_STATUS);
+
+  delay(20); //Give the QMP3 time to get the status byte from MP3 IC before we ask for it
+  
   return(mp3GetResponse());
 }
 
@@ -110,6 +122,30 @@ void mp3PlayPrevious()
   mp3Command(COMMAND_PLAY_PREVIOUS);
 }
 
+//Checks to see if Qwiic MP3 is responding over I2C
+boolean mp3IsPresent()
+{
+  Wire.beginTransmission(mp3Address);
+  if (Wire.endTransmission() != 0)
+    return(false); //Sensor did not ACK
+  return(true);
+}
+
+//Pause a currently playing song, or begin playing if current track is paused
+boolean mp3Pause()
+{
+  mp3Command(COMMAND_PAUSE);
+}
+
+//Change the I2C address
+//If you forget what address you've set the QMP3 to then close the
+//ADR jumper. This will force the I2C address to 0x36
+boolean mp3ChangeAddress(byte address)
+{
+  mp3Command(COMMAND_SET_ADDRESS, address);
+  mp3Address = address; //Change the global variable to match the new address
+}
+
 //Send command to Qwiic MP3 with options
 boolean mp3Command(byte command, byte option)
 {
@@ -145,7 +181,7 @@ byte mp3GetResponse()
   return(0);
 }
 
-//getFirmwareVersion() returns the firmware version as a float.
+//Returns the firmware version as a float
 float mp3GetVersion()
 {
   mp3Command(COMMAND_GET_VERSION);

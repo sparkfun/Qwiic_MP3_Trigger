@@ -1,5 +1,5 @@
 /*
-  Qwiic MP3 Player
+  Qwiic MP3 Trigger
   By: Nathan Seidle
   SparkFun Electronics
   Date: April 23rd, 2018
@@ -38,10 +38,6 @@
   play track 5. User must name files T001.mp3 to T010.mp3. These are different
   files from the F004.mp3 files that are played using the 'play file name'
   command over I2C.
-
-  TODO:
-
-  Works at 8MHz
 */
 
 #include <SoftwareSerial.h>
@@ -149,30 +145,30 @@ void setup()
 
   //Verify connection to MP3 IC. But give up after 1000ms
   byte counter = 0;
-  while(counter++ < 100)
+  while (counter++ < 100)
   {
     clearBuffer();
     systemStatus = stopPlaying(); //On power on, stop any playing MP3
-    if(systemStatus == 0x00) break; //IC responded OK
+    if (systemStatus == 0x00) break; //IC responded OK
     noIntDelay(10);
   }
-  
+
   setVolume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
 
 #if defined(__AVR_ATmega328P__)
-/*  Serial.begin(115200);
-  Serial.println("Qwiic MP3 Controller");
-  Serial.print("QMP3 Address: 0x");
-  Serial.println(settingAddress, HEX);
+  /*  Serial.begin(115200);
+    Serial.println("Qwiic MP3 Controller");
+    Serial.print("QMP3 Address: 0x");
+    Serial.println(settingAddress, HEX);
 
-  if (systemStatus == 0x00)
-    Serial.println("QMP3 online");
-  else
-  {
-    Serial.print("No MP3 found: 0x");
-    Serial.println(systemStatus, HEX);
-  }*/
+    if (systemStatus == 0x00)
+      Serial.println("QMP3 online");
+    else
+    {
+      Serial.print("No MP3 found: 0x");
+      Serial.println(systemStatus, HEX);
+    }*/
 #endif
 
   //Begin listening on I2C only after we've setup all our config and opened any files

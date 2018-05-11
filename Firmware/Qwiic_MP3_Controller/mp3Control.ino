@@ -1,3 +1,4 @@
+//These are the commands that are sent over serial to the WT2003S
 #define MP3_COMMAND_PLAY_INDEX_IN_ROOT 0xA2
 #define MP3_COMMAND_PLAY_FILE_IN_ROOT 0xA3
 #define MP3_COMMAND_PLAY_INDEX_IN_FOLDER 0xA4

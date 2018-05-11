@@ -1,15 +1,23 @@
 /*
-  Testing the interface on the WT2003S
+  Controlling the Qwiic MP3 Trigger with I2C Commands
   By: Nathan Seidle
   SparkFun Electronics
   Date: April 23rd, 2018
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  This example uses a serial menu system to demonstrate the various functions of the Qwiic MP3 player
+  This example uses a serial menu system to demonstrate all the various functions of the 
+  Qwiic MP3 Trigger.
 
-  Play file named T09 from triggers.
+  Use the +/- commands to change the global number and press an option to use that global number.
+  For example, hit + three times to increase the number to four, then press '2' to play file four.
 
-  Does playNext auto wrap?
+  Hardware Connections:
+  Plug in headphones
+  Make sure the SD card is in the socket
+  Don't have a USB microB cable connected right now
+  If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
+  Plug the Qwiic device onto an available Qwiic port
+  Open the serial monitor at 9600 baud
 */
 
 #include <Wire.h>
@@ -72,7 +80,6 @@ void loop()
   Serial.println("7) Set EQ");
   Serial.println("8) Play silence");
   Serial.println("P) Pause/Play from Pause");
-  Serial.println("C) Set I2C Address");
 
   while(Serial.available() == false) delay(10);
 
@@ -106,9 +113,6 @@ void loop()
       break;
     case 'P':
       mp3Pause(); //Pause, or play from pause, the current track
-      break;
-    case 'C':
-      mp3ChangeAddress(adjustableNumber); //Allowed addresses are >= 0x08 and <= 0x77
       break;
     case '+':
       adjustableNumber++;

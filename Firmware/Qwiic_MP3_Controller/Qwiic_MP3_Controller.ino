@@ -21,10 +21,12 @@
   0x04 : Play next
   0x05 : Play previous
   0x06 then 5 : Change Equalizer Setting to bass - 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
-  0x07 : Get available song count within the root folder
-  0x08 : Get song name : Returns an array of 8 bytes
-  0x09 : Get play status : 1=playing, 2=stopped, 3=paused
-  0x0A : Get firmware version : 2 bytes, upper ver and lower ver
+  0x07 then 15 : Set volume to 15. 0(off) to 31(max)
+  0x08 : Get available song count on entire SD card
+  0x09 : Get song name : Returns an array of 8 bytes
+  0x0A : Get play status : 1=playing, 2=stopped, 3=paused
+  0x0B : Get card status : Returns true if card is present and mounted
+  0x0C : Get firmware version : 2 bytes, upper ver and lower ver
   0xC7 : Change I2C address
 
   Reading data after any command:

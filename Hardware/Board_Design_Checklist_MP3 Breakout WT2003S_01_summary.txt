@@ -1,0 +1,9 @@
+1) Can standoffs/screws be used clear of other parts? [YES]
+comment: Yes, except for upper right
+
+2) Is the direction of TX/RX serial connections correct? [YES]
+comment: Only broken out to user, so yes
+
+3) Is there a correct version number in the copper (aligned properly with the edge of the PCB)? [YES]
+comment: Just above lower right standoff hole
+

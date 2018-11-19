@@ -1,9 +1,9 @@
 SparkFun Qwiic MP3 Trigger
 ========================================
 
-![SparkFun Qwiic MP3 Trigger](https://cdn.sparkfun.com//assets/parts/1/2/9/2/9/14714-Qwiic_MP3-01.jpg)
+[![SparkFun Qwiic MP3 Trigger](https://cdn.sparkfun.com//assets/parts/1/2/9/2/9/14714-Qwiic_MP3-01.jpg)](https://www.sparkfun.com/products/14808)
 
-[*SparkX Qwiic MP3 Trigger (SPX-14714)*](https://www.sparkfun.com/products/14714)
+[*SparkX Qwiic MP3 Trigger (SPX-14714)*](https://www.sparkfun.com/products/14808)
 
 Sometimes you just need an MP3 to play. Whether it's a sound track as you enter the room or a pirate cackling when a dollar [gets donated](https://github.com/nseidle/Money_Vacuum) to the kid's museum. The Qwiic MP3 Trigger takes care of all the necessary bits, all you need to do is send a simple I2C command and listen.
 
@@ -20,7 +20,7 @@ For a limited time we are including a 512MB microSD card with every Qwiic MP3 Tr
 This board is one of our many [Qwiic](https://www.sparkfun.com/qwiic) compatible boards! Simply plug and go. No soldering, no figuring out which is SDA or SCL, and no voltage regulation or translation required!
 
 SparkFun labored with love to create this code. Feel like supporting open source hardware? 
-Buy a [breakout board](https://www.sparkfun.com/products/14714) from SparkFun!
+Buy a [breakout board](https://www.sparkfun.com/products/14808) from SparkFun!
 
 Repository Contents
 -------------------

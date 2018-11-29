@@ -40,7 +40,7 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
@@ -53,8 +53,8 @@
 <layer number="94" name="Symbols" color="4" fill="1" visible="no" active="no"/>
 <layer number="95" name="Names" color="7" fill="1" visible="no" active="no"/>
 <layer number="96" name="Values" color="7" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="yes"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="no" active="yes"/>
 <layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
 <layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
 <layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
@@ -7709,27 +7709,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="15.24" y1="29.21" x2="15.24" y2="30.48" width="0.254" layer="1"/>
 </signal>
 <signal name="!SDN">
-<contactref element="R10" pad="1"/>
-<contactref element="U1" pad="1"/>
 <contactref element="U2" pad="7"/>
-<wire x1="9.525" y1="7.36" x2="9.525" y2="5.715" width="0.1524" layer="16"/>
-<wire x1="9.525" y1="5.715" x2="10.16" y2="5.08" width="0.1524" layer="16"/>
-<wire x1="10.16" y1="5.08" x2="17.78" y2="5.08" width="0.1524" layer="16"/>
-<wire x1="17.78" y1="5.08" x2="19.05" y2="6.35" width="0.1524" layer="16"/>
-<wire x1="20.525" y1="30.775" x2="21.168" y2="30.775" width="0.1524" layer="1"/>
-<wire x1="21.168" y1="30.775" x2="21.463" y2="30.48" width="0.1524" layer="1"/>
-<wire x1="21.463" y1="30.48" x2="23.749" y2="30.48" width="0.1524" layer="1"/>
-<via x="24.638" y="30.48" extent="1-16" drill="0.3048"/>
-<wire x1="23.749" y1="30.48" x2="24.638" y2="30.48" width="0.1524" layer="1"/>
-<wire x1="24.638" y1="30.48" x2="24.638" y2="15.748" width="0.1524" layer="16"/>
-<wire x1="23.71" y1="29.591" x2="23.71" y2="30.441" width="0.1524" layer="1"/>
-<wire x1="23.71" y1="30.441" x2="23.749" y2="30.48" width="0.1524" layer="1"/>
-<via x="19.05" y="6.35" extent="1-16" drill="0.3048"/>
-<wire x1="19.05" y1="6.35" x2="19.05" y2="12.7" width="0.1524" layer="1"/>
-<wire x1="19.05" y1="12.7" x2="20.32" y2="13.97" width="0.1524" layer="1"/>
-<via x="20.32" y="13.97" extent="1-16" drill="0.3048"/>
-<wire x1="20.32" y1="13.97" x2="22.86" y2="13.97" width="0.1524" layer="16"/>
-<wire x1="22.86" y1="13.97" x2="24.638" y2="15.748" width="0.1524" layer="16"/>
 </signal>
 <signal name="IN-AMP">
 <contactref element="R5" pad="2"/>
@@ -7857,6 +7837,23 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <via x="12.7" y="15.24" extent="1-16" drill="0.3048"/>
 <wire x1="12.065" y1="17.52" x2="12.065" y2="15.875" width="0.1524" layer="1"/>
 <wire x1="12.065" y1="15.875" x2="12.7" y2="15.24" width="0.1524" layer="1"/>
+<contactref element="R10" pad="1"/>
+<contactref element="U1" pad="1"/>
+<wire x1="20.525" y1="30.775" x2="21.041" y2="30.775" width="0.1524" layer="1"/>
+<wire x1="21.041" y1="30.775" x2="21.336" y2="30.48" width="0.1524" layer="1"/>
+<wire x1="21.336" y1="30.48" x2="22.86" y2="30.48" width="0.1524" layer="1"/>
+<wire x1="22.86" y1="30.48" x2="23.241" y2="30.48" width="0.1524" layer="1"/>
+<wire x1="23.241" y1="30.48" x2="23.71" y2="30.011" width="0.1524" layer="1"/>
+<wire x1="23.71" y1="30.011" x2="23.71" y2="29.591" width="0.1524" layer="1"/>
+<wire x1="12.7" y1="15.24" x2="12.7" y2="16.002" width="0.1524" layer="16"/>
+<wire x1="12.7" y1="16.002" x2="13.589" y2="16.891" width="0.1524" layer="16"/>
+<wire x1="13.589" y1="16.891" x2="14.4587125" y2="16.891" width="0.1524" layer="16"/>
+<wire x1="14.4587125" y1="16.891" x2="15.5509125" y2="15.7988" width="0.1524" layer="16"/>
+<wire x1="22.7838" y1="15.7988" x2="23.114" y2="16.129" width="0.1524" layer="16"/>
+<wire x1="23.114" y1="16.129" x2="23.114" y2="30.226" width="0.1524" layer="16"/>
+<wire x1="23.114" y1="30.226" x2="22.86" y2="30.48" width="0.1524" layer="16"/>
+<via x="22.86" y="30.48" extent="1-16" drill="0.3048"/>
+<wire x1="15.5509125" y1="15.7988" x2="22.7838" y2="15.7988" width="0.1524" layer="16"/>
 </signal>
 <signal name="MP3-TXO">
 <contactref element="U2" pad="16"/>

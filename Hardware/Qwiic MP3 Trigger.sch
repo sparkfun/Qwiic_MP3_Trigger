@@ -31624,15 +31624,6 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="!SDN" class="0">
 <segment>
-<wire x1="226.06" y1="73.66" x2="223.52" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="223.52" y1="73.66" x2="220.98" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="223.52" y1="76.2" x2="223.52" y2="73.66" width="0.1524" layer="91"/>
-<junction x="223.52" y="73.66"/>
-<pinref part="R10" gate="G$1" pin="1"/>
-<label x="226.06" y="73.66" size="1.27" layer="95" rot="MR180" xref="yes"/>
-<pinref part="U1" gate="U1" pin="!SHUTDOWN"/>
-</segment>
-<segment>
 <pinref part="U2" gate="U1" pin="P10"/>
 <wire x1="127" y1="127" x2="132.08" y2="127" width="0.1524" layer="91"/>
 <label x="132.08" y="127" size="1.27" layer="95" xref="yes"/>
@@ -31719,6 +31710,15 @@ from being injected onto Qwiic 3.3V</text>
 <wire x1="198.12" y1="124.46" x2="200.66" y2="124.46" width="0.1524" layer="91"/>
 <label x="200.66" y="124.46" size="1.27" layer="95" xref="yes"/>
 <pinref part="U4" gate="U1" pin="(A2)2"/>
+</segment>
+<segment>
+<wire x1="226.06" y1="73.66" x2="223.52" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="223.52" y1="73.66" x2="220.98" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="223.52" y1="76.2" x2="223.52" y2="73.66" width="0.1524" layer="91"/>
+<junction x="223.52" y="73.66"/>
+<pinref part="R10" gate="G$1" pin="1"/>
+<label x="226.06" y="73.66" size="1.27" layer="95" rot="MR180" xref="yes"/>
+<pinref part="U1" gate="U1" pin="!SHUTDOWN"/>
 </segment>
 </net>
 <net name="MP3-TXO" class="0">

@@ -27,6 +27,7 @@
   0x0A : Get play status : 1=playing, 2=stopped, 3=paused
   0x0B : Get card status : Returns true if card is present and mounted
   0x0C : Get firmware version : 2 bytes, upper ver and lower ver
+  0x0D : Clear interrupts
   0xC7 : Change I2C address
 
   Reading data after any command:
@@ -40,15 +41,18 @@
   play track 5. User must name files T001.mp3 to T010.mp3. These are different
   files from the F004.mp3 files that are played using the 'play file name'
   command over I2C.
+
+  Change long:
+  v1.1 - Added clear interrupt command. Created Interrupt State Machine.
 */
 
 #include <SoftwareSerial.h>
 
-//#if defined(__AVR_ATmega328P__)
-//SoftwareSerial mp3(6, 4); //RX, TX on dev hardware. 6 to ylw, 4 to blu
-//#else
+#if defined(__AVR_ATmega328P__)
+SoftwareSerial mp3(6, 4); //RX, TX on dev hardware.
+#else
 SoftwareSerial mp3(1, 0); //RX, TX on Tiny
-//#endif
+#endif
 
 #include <Wire.h>
 
@@ -80,6 +84,7 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 #define COMMAND_GET_PLAY_STATUS 0x0A
 #define COMMAND_GET_CARD_STATUS 0x0B
 #define COMMAND_GET_VERSION 0x0C
+#define COMMAND_CLEAR_INTERRUPTS 0x0D
 #define COMMAND_SET_ADDRESS 0xC7
 
 #define SYSTEM_STATUS_OK 0x00
@@ -101,7 +106,7 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 0;
+const byte firmwareVersionMinor = 1;
 
 //Hardware pins
 const byte adr = 9; //Address select jumper is on pin 9
@@ -114,16 +119,30 @@ const byte playing = 2;
 
 //Variables used in the I2C interrupt so we use volatile
 volatile byte systemStatus = SYSTEM_STATUS_OK; //Tracks the response from the MP3 IC
+
+//The MP3 IC can take up to 250ms to respond to a command. We don't want to clock stretch
+//after every command so instead, we harvest the system status in the main loop.
+volatile boolean getNewStatus = true; //When possible, check MP3 IC for system status
+
 volatile byte responseType = RESPONSE_TYPE_SYSTEM_STATUS; //Tracks how to respond based on incoming requests
 volatile char songName[9]; //Loaded with the track name upon request
 volatile byte mainLoopTask = 0; //Tracks a request for tasks that must be done in the main loop
-volatile byte interruptOn = true; //Interrupt turns on when track has completed, turns off when status is read
 volatile byte playStatus = 0; //Tracks the play response. 1=play, 2=stop, 3=pause
 volatile byte cardStatus = 0; //Tracks if a card is detected or not
 
 volatile byte settingAddress = I2C_ADDRESS_DEFAULT; //The 7-bit I2C address of this QMP3
 volatile byte settingVolume = 0;
 volatile byte settingEQ = 0;
+
+//Interrupt turns on when track has completed,
+//turns off when interrupts are cleared by command
+//And goes to No Int if a song has started playing
+enum State {
+  STATE_INT = 0,
+  STATE_INT_CLEARED,
+  STATE_NO_INT
+};
+volatile byte interruptState = STATE_NO_INT;
 
 byte songCount = 0; //Tracks how many songs are available to play
 byte oldTriggerNumber = 0; //Tracks trigger state changes
@@ -139,7 +158,9 @@ void setup()
   pinMode(trigger3, INPUT_PULLUP);
   pinMode(trigger4, INPUT_PULLUP);
 
-  pinMode(interruptOutput, INPUT); //Go to high impedance, indicating no interrupt
+  //This will set the int pin to high impedance (aka pulled high by external resistor)
+  digitalWrite(interruptOutput, LOW); //Push pin to disable internal pull-ups
+  pinMode(interruptOutput, INPUT); //Go to high impedance
 
   readSystemSettings(); //Load all system settings from EEPROM
 
@@ -149,28 +170,28 @@ void setup()
   byte counter = 0;
   while (counter++ < 100)
   {
-    clearBuffer();
+    clearBuffer(); //Read any stray serial bytes being sent from MP3 ICs
     systemStatus = stopPlaying(); //On power on, stop any playing MP3
     if (systemStatus == 0x00) break; //IC responded OK
-    noIntDelay(10);
+    noIntDelay(10); //10ms
   }
 
   setVolume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
 
 #if defined(__AVR_ATmega328P__)
-  /*  Serial.begin(115200);
-    Serial.println("Qwiic MP3 Controller");
-    Serial.print("QMP3 Address: 0x");
-    Serial.println(settingAddress, HEX);
+  Serial.begin(115200);
+  Serial.println("Qwiic MP3 Controller");
+  Serial.print("QMP3 Address: 0x");
+  Serial.println(settingAddress, HEX);
 
-    if (systemStatus == 0x00)
-      Serial.println("QMP3 online");
-    else
-    {
-      Serial.print("No MP3 found: 0x");
-      Serial.println(systemStatus, HEX);
-    }*/
+  if (systemStatus == 0x00)
+    Serial.println("QMP3 online");
+  else
+  {
+    Serial.print("No MP3 found: 0x");
+    Serial.println(systemStatus, HEX);
+  }
 #endif
 
   //Begin listening on I2C only after we've setup all our config and opened any files
@@ -200,7 +221,7 @@ void loop()
       digitalRead(trigger3) == LOW ||
       digitalRead(trigger4) == LOW)
   {
-    delay(100); // Debounce/Wait a bit in case user is pulling other pins low
+    delay(100); //Debounce/Wait a bit in case user is pulling other pins low
 
     byte fileNumber = 0;
     if (digitalRead(trigger1) == LOW) fileNumber += 1;
@@ -222,8 +243,8 @@ void loop()
         byte result = playTriggerFile(fileNumber); //Ex: 2 will play T002xxx.mp3
 
 #if defined(__AVR_ATmega328P__)
-        //Serial.print("result: 0x");
-        //Serial.println(result, HEX);
+        Serial.print("result: 0x");
+        Serial.println(result, HEX);
 #endif
 
         oldTriggerNumber = fileNumber; //Update the state so we don't play this again
@@ -235,224 +256,37 @@ void loop()
     oldTriggerNumber = 0;
   }
 
-  //Every 100ms check to see if we're done playing the song
-  //If so, set the interrupt pin low
-  if (interruptOn == false)
+
+  //Interrupt pin state machine
+  //There are three state: No int, Int, and Int Cleared
+  //The third state is set in the I2C interrupt when Clear Ints command is received.
+  if (interruptState == STATE_NO_INT)
   {
+    //Every 100ms check to see if we're done playing the song
     if (millis() - lastCheck > 100)
     {
       lastCheck = millis();
 
       if (isPlaying() == false)
       {
-        interruptOn = true;
+        //If so, set the interrupt pin low to indicate interrupt
         pinMode(interruptOutput, OUTPUT);
         digitalWrite(interruptOutput, LOW);
+
+        interruptState = STATE_INT; //Go to next state
       }
     }
   }
-}
-
-//When Qwiic MP3 receives data bytes, this function is called as an interrupt
-//We act immediately on the incoming command so that QMP3 will stretch the clock
-//while it is completing the requested operation
-void receiveEvent(int numberOfBytesReceived)
-{
-  //Record bytes to local array
-  byte incoming = Wire.read();
-
-  if (incoming == COMMAND_SET_ADDRESS) //Set new I2C address
+  else if (interruptState == STATE_INT_CLEARED)
   {
-    if (Wire.available())
+    if (isPlaying() == true)
     {
-      settingAddress = Wire.read();
-
-      //Error check
-      if (settingAddress < 0x08 || settingAddress > 0x77)
-        return; //Command failed. This address is out of bounds.
-
-      EEPROM.write(LOCATION_I2C_ADDRESS, settingAddress);
-
-      //Our I2C address may have changed because of user's command
-      startI2C(); //Determine the I2C address we should be using and begin listening on I2C bus
+      interruptState = STATE_NO_INT; //Go to next state
     }
-  }
-  else if (incoming == COMMAND_STOP)
-  {
-    systemStatus = stopPlaying();
-  }
-  else if (incoming == COMMAND_PLAY_TRACK)
-  {
-    if (Wire.available())
-    {
-      byte trackNumber = Wire.read();
-      systemStatus = playTrackNumber(trackNumber);
-
-      interruptOn = false; //Once a track has started playing, interrupt should turn off
-      pinMode(interruptOutput, INPUT); //Go to high impedance
-    }
-  }
-  else if (incoming == COMMAND_PLAY_FILENUMBER)
-  {
-    if (Wire.available())
-    {
-      byte fileNumber = Wire.read();
-      systemStatus = playFileName(fileNumber); //For example 3 will play F003xxx.mp3
-
-      interruptOn = false; //Once a track has started playing, interrupt should turn off
-      pinMode(interruptOutput, INPUT); //Go to high impedance
-    }
-  }
-  else if (incoming == COMMAND_SET_VOLUME)
-  {
-    if (Wire.available())
-    {
-      settingVolume = Wire.read();
-
-      //Error check
-      if (settingVolume > 31)
-        return; //Command failed. This volume is out of bounds.
-
-      EEPROM.write(LOCATION_VOLUME, settingVolume);
-
-      systemStatus = setVolume(settingVolume); //Go to this volume
-    }
-  }
-  else if (incoming == COMMAND_PAUSE)
-  {
-    systemStatus = pause();
-  }
-  else if (incoming == COMMAND_PLAY_NEXT)
-  {
-    systemStatus = playNext();
-
-    interruptOn = false; //Once a track has started playing, interrupt should turn off
-    pinMode(interruptOutput, INPUT); //Go to high impedance
-  }
-  else if (incoming == COMMAND_PLAY_PREVIOUS)
-  {
-    systemStatus = playPrevious();
-
-    interruptOn = false; //Once a track has started playing, interrupt should turn off
-    pinMode(interruptOutput, INPUT); //Go to high impedance
-  }
-  else if (incoming == COMMAND_SET_EQ)
-  {
-    if (Wire.available())
-    {
-      settingEQ = Wire.read();
-
-      //Error check
-      if (settingEQ > 5)
-        return; //Command failed. This EQ setting is out of bounds.
-
-      EEPROM.write(LOCATION_EQ, settingEQ);
-
-      systemStatus = setEQ(settingEQ); //Go to this equalizer setting
-    }
-  }
-  else if (incoming == COMMAND_GET_SONG_COUNT)
-  {
-    //Count is loaded at setup()
-    //responseType = RESPONSE_TYPE_FILE_COUNT; //Change response type
-    mainLoopTask = TASK_GET_SONG_COUNT; //The count is requested in the main loop
-  }
-  else if (incoming == COMMAND_GET_SONG_NAME)
-  {
-    mainLoopTask = TASK_GET_SONG_NAME; //The name is requested in the main loop
-  }
-  else if (incoming == COMMAND_GET_PLAY_STATUS)
-  {
-    playStatus = 0x02; //Stopped
-    if (digitalRead(playing) == HIGH) //Song is playing
-      playStatus = 0x01;
-
-    responseType = RESPONSE_TYPE_PLAY_STATUS; //Change response type
-  }
-  else if (incoming == COMMAND_GET_CARD_STATUS)
-  {
-    cardStatus = 0x01; //Card is good
-    if (setEQ(settingEQ) == 0x05) //0x05 is the no card or corrupt card error
-      cardStatus = 0x00; //No card
-
-    responseType = RESPONSE_TYPE_CARD_STATUS; //Change response type
-  }
-  else if (incoming == COMMAND_GET_VERSION)
-  {
-    responseType = RESPONSE_TYPE_FIRMWARE_VERSION;
-  }
-
-}
-
-//Send back a number of bytes, max 32 bytes
-//When QMP3 gets a request for data from the user, this function is called as an interrupt
-//The interrupt will respond with different types of data depending on what response state we are in
-//The response type is set during the receiveEvent interrupt
-void requestEvent()
-{
-  if (responseType == RESPONSE_TYPE_SONG_COUNT)
-  {
-    Wire.write(songCount);
-  }
-  else if (responseType == RESPONSE_TYPE_SONG_NAME)
-  {
-    Wire.write((char *)songName, 8);
-  }
-  else if (responseType == RESPONSE_TYPE_PLAY_STATUS)
-  {
-    Wire.write(playStatus);
-  }
-  else if (responseType == RESPONSE_TYPE_CARD_STATUS)
-  {
-    Wire.write(cardStatus);
-  }
-  else if (responseType == RESPONSE_TYPE_FIRMWARE_VERSION)
-  {
-    Wire.write(firmwareVersionMajor);
-    Wire.write(firmwareVersionMinor);
-  }
-  else //By default we respond with the result from the last operation
-  {
-    Wire.write(systemStatus);
-  }
-
-  responseType = RESPONSE_TYPE_SYSTEM_STATUS; //Reset response type
-
-  //Clear the interrupt pin once user has requested something
-  interruptOn = false;
-  pinMode(interruptOutput, INPUT); //Go to high impedance
-}
-
-//Reads the current system settings from EEPROM
-//If anything looks weird, reset setting to default value
-void readSystemSettings(void)
-{
-  //Read what I2C address we should use
-  settingAddress = EEPROM.read(LOCATION_I2C_ADDRESS);
-  if (settingAddress == 255)
-  {
-    settingAddress = I2C_ADDRESS_DEFAULT; //By default, we listen for I2C_ADDRESS_DEFAULT
-    EEPROM.write(LOCATION_I2C_ADDRESS, settingAddress);
-  }
-
-  //Read what volume we should be at
-  settingVolume = EEPROM.read(LOCATION_VOLUME);
-  if (settingVolume > 31)
-  {
-    settingVolume = 15; //By default, go to 50% volume
-    EEPROM.write(LOCATION_VOLUME, settingVolume);
-  }
-
-  //Read what eqaulizer setting we should be at
-  settingEQ = EEPROM.read(LOCATION_EQ);
-  if (settingEQ > 5)
-  {
-    settingEQ = 0; //By default, go normal EQ setting
-    EEPROM.write(LOCATION_EQ, settingEQ);
   }
 }
 
-//Begin listening on I2C bus as I2C slave using the global variable setting_i2c_address
+//Begin listening on I2C bus as I2C slave using the global variable settingAddress
 void startI2C()
 {
   Wire.end(); //Before we can change addresses we need to stop
@@ -465,4 +299,21 @@ void startI2C()
   //The connections to the interrupts are severed when a Wire.begin occurs. So re-declare them.
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
+}
+
+//Software delay. Does not rely on internal timers.
+void noIntDelay(byte amount)
+{
+  for (byte y = 0 ; y < amount ; y++)
+  {
+#if defined(__AVR_ATmega328P__)
+    for (unsigned int x = 0 ; x < 3000 ; x++) //1ms at 16MHz. Validated with analyzer
+#else
+    //ATtiny84 at 8MHz
+    for (unsigned int x = 0 ; x < 1500 ; x++) //1ms at 8MHz
+#endif
+    {
+      __asm__("nop\n\t");
+    }
+  }
 }

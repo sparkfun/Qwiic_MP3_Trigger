@@ -163,9 +163,9 @@ byte setEQ(byte eqType)
 //01: play, 02: stop, 03: pause
 boolean isPlaying(void)
 {
-  if(digitalRead(playing) == HIGH) return(true); //Song is playing
+  if (digitalRead(playing) == HIGH) return (true); //Song is playing
   return (false);
-  
+
   //if(getPlayStatus() == 0x01) return (true);
   //return (false);
 }
@@ -232,6 +232,8 @@ void sendCommand(byte commandLength)
   mp3.write(MP3_END_CODE);
 }
 
+//Wait for a serial response from the MP3 IC
+//Time out if the MP3 IC fails to respond
 byte getResponse(void)
 {
   if (responseAvailable() == false) return (0xFF); //Timeout
@@ -267,7 +269,7 @@ unsigned int getTwoByteResponse(void)
 }
 
 //Returns true if serial data is available within an alloted amount of time
-//The setVolume command at 150ms seems to take the longest amount of time for 
+//The setVolume command at 150ms seems to take the longest amount of time for
 //the IC to respond.
 boolean responseAvailable()
 {
@@ -275,7 +277,7 @@ boolean responseAvailable()
   while (mp3.available() == false)
   {
     noIntDelay(1); //No delays in interrupts
-    
+
     if (counter++ > 250) return (false); //Timeout
   }
   return (true);
@@ -284,25 +286,9 @@ boolean responseAvailable()
 //Clear anything sitting in the incoming buffer
 void clearBuffer()
 {
-  while (mp3.available()) 
+  while (mp3.available())
   {
     mp3.read();
     noIntDelay(1); //1 byte at 9600bps should take 1ms
   }
 }
-
-void noIntDelay(byte amount)
-{
-  for(byte y = 0 ; y < amount ; y++)
-  {
-//#if defined(__AVR_ATmega328P__)
-//    for(unsigned int x = 0 ; x < 3000 ; x++) //1ms at 16MHz. Validated with analyzer
-//#else
-    for(unsigned int x = 0 ; x < 1500 ; x++) //1ms at 8MHz
-//#endif
-    {
-      __asm__("nop\n\t");
-    }
-  }
-}
-

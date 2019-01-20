@@ -49,9 +49,9 @@
 #include <SoftwareSerial.h>
 
 #if defined(__AVR_ATmega328P__)
-SoftwareSerial mp3(6, 4); //RX, TX on dev hardware.
+SoftwareSerial mp3(6, 4); //RX, TX on dev hardware
 #else
-SoftwareSerial mp3(1, 0); //RX, TX on Tiny
+SoftwareSerial mp3(1, 0); //RX, TX on production hardware
 #endif
 
 #include <Wire.h>
@@ -70,6 +70,8 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 #define I2C_ADDRESS_DEFAULT 0x37
 #define I2C_ADDRESS_JUMPER_CLOSED 0x36
 
+#define DEVICE_ID 0x39 //This is a hard coded number we test against to verify the device type.
+
 //These are the commands we understand and may respond to
 #define COMMAND_STOP 0x00
 #define COMMAND_PLAY_TRACK 0x01 //Play a given track number like on a CD: regardless of file names plays 2nd file in dir.
@@ -85,6 +87,9 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 #define COMMAND_GET_CARD_STATUS 0x0B
 #define COMMAND_GET_VERSION 0x0C
 #define COMMAND_CLEAR_INTERRUPTS 0x0D
+#define COMMAND_GET_VOLUME 0x0E
+#define COMMAND_GET_EQ 0x0F
+#define COMMAND_GET_ID 0x10
 #define COMMAND_SET_ADDRESS 0xC7
 
 #define SYSTEM_STATUS_OK 0x00
@@ -98,6 +103,9 @@ SoftwareSerial mp3(1, 0); //RX, TX on Tiny
 #define RESPONSE_TYPE_PLAY_STATUS 0x03
 #define RESPONSE_TYPE_CARD_STATUS 0x04
 #define RESPONSE_TYPE_FIRMWARE_VERSION 0x05
+#define RESPONSE_TYPE_GET_VOLUME 0x06
+#define RESPONSE_TYPE_GET_EQ 0x07
+#define RESPONSE_TYPE_GET_ID 0x08
 
 #define TASK_NONE 0x00
 #define TASK_GET_SONG_NAME 0x01
@@ -121,13 +129,15 @@ const byte playing = 2;
 volatile byte systemStatus = SYSTEM_STATUS_OK; //Tracks the response from the MP3 IC
 
 //The MP3 IC can take up to 250ms to respond to a command. We don't want to clock stretch
-//after every command so instead, we harvest the system status in the main loop.
-volatile boolean getNewStatus = true; //When possible, check MP3 IC for system status
+//after every command so instead, we use a que of commands.
+const byte MAX_QUE_SIZE = 10;
+volatile byte commandQue[MAX_QUE_SIZE][2];
+volatile byte queHead = 0;
+volatile byte queTail = 0;
 
 volatile byte responseType = RESPONSE_TYPE_SYSTEM_STATUS; //Tracks how to respond based on incoming requests
 volatile char songName[9]; //Loaded with the track name upon request
-volatile byte mainLoopTask = 0; //Tracks a request for tasks that must be done in the main loop
-volatile byte playStatus = 0; //Tracks the play response. 1=play, 2=stop, 3=pause
+volatile byte playStatus = 0; //Tracks the play response. 1=play, 2=stop
 volatile byte cardStatus = 0; //Tracks if a card is detected or not
 
 volatile byte settingAddress = I2C_ADDRESS_DEFAULT; //The 7-bit I2C address of this QMP3
@@ -166,18 +176,19 @@ void setup()
 
   mp3.begin(9600); //WS2003S communicates at 9600bps
 
-  //Verify connection to MP3 IC. But give up after 1000ms
+  //The MP3 IC takes ~1520ms to boot, and won't respond to commands during this time
+  //Verify connection to MP3 IC. But give up after 2500ms
   byte counter = 0;
-  while (counter++ < 100)
+  while (counter++ < 10)
   {
     clearBuffer(); //Read any stray serial bytes being sent from MP3 ICs
-    systemStatus = stopPlaying(); //On power on, stop any playing MP3
+    systemStatus = stopPlaying(); //On power on, stop any playing MP3. Times out after 250ms.
     if (systemStatus == 0x00) break; //IC responded OK
-    noIntDelay(10); //10ms
   }
 
   setVolume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
+  songCount = getSongCount(); //Preload this before we begin
 
 #if defined(__AVR_ATmega328P__)
   Serial.begin(115200);
@@ -200,21 +211,6 @@ void setup()
 
 void loop()
 {
-  //We can't do serial receive during the I2C interrupt so we do anything that
-  //requires a response to a command
-  if (mainLoopTask == TASK_GET_SONG_NAME)
-  {
-    getSongName(); //Load current song name into global array
-    mainLoopTask = TASK_NONE; //Reset task to nothing
-    responseType = RESPONSE_TYPE_SONG_NAME; //Change response type
-  }
-  else if (mainLoopTask == TASK_GET_SONG_COUNT)
-  {
-    songCount = getSongCount();
-    mainLoopTask = TASK_NONE; //Reset task to nothing
-    responseType = RESPONSE_TYPE_SONG_COUNT; //Change response type
-  }
-
   //Check trigger pins and act accordingly
   if (digitalRead(trigger1) == LOW ||
       digitalRead(trigger2) == LOW ||
@@ -284,6 +280,43 @@ void loop()
       interruptState = STATE_NO_INT; //Go to next state
     }
   }
+
+  //Process any commands sitting in the que
+  if (queTail != queHead)
+  {
+    queTail++;
+    if (queTail == MAX_QUE_SIZE) queTail = 0;
+
+    if (commandQue[queTail][0] == COMMAND_STOP)
+      systemStatus = stopPlaying();
+    else if (commandQue[queTail][0] == COMMAND_PLAY_TRACK)
+      systemStatus = playTrackNumber(commandQue[queTail][1]);
+    else if (commandQue[queTail][0] == COMMAND_PLAY_FILENUMBER)
+      systemStatus = playFileName(commandQue[queTail][1]);
+    else if (commandQue[queTail][0] == COMMAND_SET_VOLUME)
+      systemStatus = setVolume(commandQue[queTail][1]);
+    else if (commandQue[queTail][0] == COMMAND_PAUSE)
+      systemStatus = pause();
+    else if (commandQue[queTail][0] == COMMAND_PLAY_NEXT)
+      systemStatus = playNext();
+    else if (commandQue[queTail][0] == COMMAND_PLAY_PREVIOUS)
+      systemStatus = playPrevious();
+    else if (commandQue[queTail][0] == COMMAND_SET_EQ)
+      systemStatus = setEQ(settingEQ);
+    else if (commandQue[queTail][0] == COMMAND_GET_SONG_NAME)
+    {
+      getSongName(); //Load current song name into global array
+      responseType = RESPONSE_TYPE_SONG_NAME;
+    }
+    else if (commandQue[queTail][0] == COMMAND_GET_CARD_STATUS)
+    {
+      cardStatus = 0x01; //Card is good
+      if (setEQ(settingEQ) == 0x05) //0x05 is the no card or corrupt card error
+        cardStatus = 0x00; //No card
+
+      responseType = RESPONSE_TYPE_CARD_STATUS; //Change response type
+    }
+  }
 }
 
 //Begin listening on I2C bus as I2C slave using the global variable settingAddress
@@ -304,16 +337,31 @@ void startI2C()
 //Software delay. Does not rely on internal timers.
 void noIntDelay(byte amount)
 {
-  for (byte y = 0 ; y < amount ; y++)
+  for (volatile byte y = 0 ; y < amount ; y++)
   {
 #if defined(__AVR_ATmega328P__)
-    for (unsigned int x = 0 ; x < 3000 ; x++) //1ms at 16MHz. Validated with analyzer
+    for (volatile unsigned int x = 0 ; x < 3000 ; x++) //1ms at 16MHz. Validated with analyzer
 #else
     //ATtiny84 at 8MHz
-    for (unsigned int x = 0 ; x < 1500 ; x++) //1ms at 8MHz
+    for (volatile unsigned int x = 0 ; x < 1500 ; x++) //1ms at 8MHz
 #endif
     {
       __asm__("nop\n\t");
     }
   }
+}
+
+//Adds a command to the que of commands we need to enact
+void addToQue(byte command, byte value)
+{
+  queHead++;
+  if (queHead == MAX_QUE_SIZE) queHead = 0;
+
+  commandQue[queHead][0] = command;
+  commandQue[queHead][1] = value;
+}
+
+void addToQue(byte command)
+{
+  addToQue(command, 0);
 }

@@ -24,14 +24,14 @@ void receiveEvent(int numberOfBytesReceived)
   }
   else if (incoming == COMMAND_STOP)
   {
-    systemStatus = stopPlaying();
+    addToQue(COMMAND_STOP); //We have to add commands to the que because in the interrupt, we cannot do software serial reception
   }
   else if (incoming == COMMAND_PLAY_TRACK)
   {
     if (Wire.available())
     {
       byte trackNumber = Wire.read();
-      systemStatus = playTrackNumber(trackNumber);
+      addToQue(COMMAND_PLAY_TRACK, trackNumber);
     }
   }
   else if (incoming == COMMAND_PLAY_FILENUMBER)
@@ -39,7 +39,7 @@ void receiveEvent(int numberOfBytesReceived)
     if (Wire.available())
     {
       byte fileNumber = Wire.read();
-      systemStatus = playFileName(fileNumber); //For example 3 will play F003xxx.mp3
+      addToQue(COMMAND_PLAY_FILENUMBER, fileNumber); //For example 3 will play F003xxx.mp3
     }
   }
   else if (incoming == COMMAND_SET_VOLUME)
@@ -54,20 +54,20 @@ void receiveEvent(int numberOfBytesReceived)
 
       EEPROM.write(LOCATION_VOLUME, settingVolume);
 
-      systemStatus = setVolume(settingVolume); //Go to this volume
+      addToQue(COMMAND_SET_VOLUME, settingVolume); //Go to this volume
     }
   }
   else if (incoming == COMMAND_PAUSE)
   {
-    systemStatus = pause();
+    addToQue(COMMAND_PAUSE);
   }
   else if (incoming == COMMAND_PLAY_NEXT)
   {
-    systemStatus = playNext();
+    addToQue(COMMAND_PLAY_NEXT);
   }
   else if (incoming == COMMAND_PLAY_PREVIOUS)
   {
-    systemStatus = playPrevious();
+    addToQue(COMMAND_PLAY_PREVIOUS);
   }
   else if (incoming == COMMAND_SET_EQ)
   {
@@ -81,22 +81,22 @@ void receiveEvent(int numberOfBytesReceived)
 
       EEPROM.write(LOCATION_EQ, settingEQ);
 
-      systemStatus = setEQ(settingEQ); //Go to this equalizer setting
+      addToQue(COMMAND_SET_EQ); //Go to this equalizer setting
     }
   }
   else if (incoming == COMMAND_GET_SONG_COUNT)
   {
-    //Count is loaded at setup()
-    //responseType = RESPONSE_TYPE_FILE_COUNT; //Change response type
-    mainLoopTask = TASK_GET_SONG_COUNT; //The count is requested in the main loop
+    //addToQue(COMMAND_GET_SONG_COUNT);
+
+    responseType = RESPONSE_TYPE_SONG_COUNT; //Count is loaded at setup()
   }
   else if (incoming == COMMAND_GET_SONG_NAME)
   {
-    mainLoopTask = TASK_GET_SONG_NAME; //The name is requested in the main loop
+    addToQue(COMMAND_GET_SONG_NAME);
   }
   else if (incoming == COMMAND_GET_PLAY_STATUS)
   {
-    playStatus = 0x02; //Stopped
+    playStatus = 0x00; //Stopped
     if (digitalRead(playing) == HIGH) //Song is playing
       playStatus = 0x01;
 
@@ -104,11 +104,7 @@ void receiveEvent(int numberOfBytesReceived)
   }
   else if (incoming == COMMAND_GET_CARD_STATUS)
   {
-    cardStatus = 0x01; //Card is good
-    if (setEQ(settingEQ) == 0x05) //0x05 is the no card or corrupt card error
-      cardStatus = 0x00; //No card
-
-    responseType = RESPONSE_TYPE_CARD_STATUS; //Change response type
+    addToQue(COMMAND_GET_CARD_STATUS);
   }
   else if (incoming == COMMAND_GET_VERSION)
   {
@@ -117,14 +113,26 @@ void receiveEvent(int numberOfBytesReceived)
   else if (incoming == COMMAND_CLEAR_INTERRUPTS)
   {
     //If we are in the Interrupt state, then turn off interrupt
-    if(interruptState == STATE_INT)
+    if (interruptState == STATE_INT)
     {
       //This will set the int pin to high impedance (aka pulled high by external resistor)
       digitalWrite(interruptOutput, LOW); //Push pin to disable internal pull-ups
       pinMode(interruptOutput, INPUT); //Go to high impedance
-      
+
       interruptState = STATE_INT_CLEARED; //Go to next state
     }
+  }
+  else if (incoming == COMMAND_GET_VOLUME)
+  {
+    responseType = RESPONSE_TYPE_GET_VOLUME;
+  }
+  else if (incoming == COMMAND_GET_EQ)
+  {
+    responseType = RESPONSE_TYPE_GET_EQ;
+  }
+  else if (incoming == COMMAND_GET_ID)
+  {
+    responseType = RESPONSE_TYPE_GET_ID;
   }
 }
 
@@ -154,6 +162,18 @@ void requestEvent()
   {
     Wire.write(firmwareVersionMajor);
     Wire.write(firmwareVersionMinor);
+  }
+  else if (responseType == RESPONSE_TYPE_GET_VOLUME)
+  {
+    Wire.write(settingVolume);
+  }
+  else if (responseType == RESPONSE_TYPE_GET_EQ)
+  {
+    Wire.write(settingEQ);
+  }
+  else if (responseType == RESPONSE_TYPE_GET_ID)
+  {
+    Wire.write(DEVICE_ID);
   }
   else //By default we respond with the result from the last operation
   {

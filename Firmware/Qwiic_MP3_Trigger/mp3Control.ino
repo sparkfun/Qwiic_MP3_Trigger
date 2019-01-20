@@ -32,21 +32,27 @@ unsigned int getSongCount()
 
   if (responseAvailable() == false) return (0); //Timeout
 
-  //Get three byte response
-  unsigned int response = 0xFFFF;
+  //Get three byte response. Timeout after 250ms
   byte i = 0;
+  while (mp3.available() < 3)
+  {
+    noIntDelay(1);
+    if (i++ > 250) return(0); //Error
+  }
+
+  unsigned int count = 0xFFFF;
+  i = 0;
   while (mp3.available())
   {
     byte incoming = mp3.read();
     if (i == 0) ; //This is throw away value 0xC5
-    else if (i == 1) response = (incoming << 8); //MSB
-    else if (i == 2) response |= incoming; //LSB
+    else if (i == 1) count = (incoming << 8); //MSB
+    else if (i == 2) count |= incoming; //LSB
 
     i++;
-    noIntDelay(1); //At 9600bps 1 byte takes 0.8ms
   }
 
-  return (response);
+  return (count);
 }
 
 //Query the song name of the current play
@@ -57,19 +63,19 @@ void getSongName()
   commandBytes[0] = MP3_COMMAND_GET_SONG_NAME_PLAYING;
   sendCommand(1);
 
-  if (responseAvailable() == false)
-  {
-    songName[0] = 'E';
-    songName[1] = 'r';
-    songName[2] = 'r';
-    songName[3] = 'o';
-    songName[4] = 'r';
-    songName[5] = '\0';
-    return;
-  }
+  strcpy(songName, "Error\0");
+  if (responseAvailable() == false) return;
 
-  //Get 9 byte response
+  //Wait for 9 byte response. Timeout after 250ms
   byte i = 0;
+  while (mp3.available() < 9)
+  {
+    noIntDelay(1);
+    if (i++ > 250) return; //Return with Error in songName
+  }
+  
+  //Parse the response
+  i = 0;
   while (mp3.available())
   {
     byte incoming = mp3.read();
@@ -77,7 +83,6 @@ void getSongName()
     else if (i < 9) songName[i - 1] = incoming;
 
     i++;
-    noIntDelay(1); //At 9600bps 1 byte takes 0.8ms
   }
   songName[8] = '\0'; //Terminate this string
 }
@@ -139,14 +144,15 @@ byte setVolume(byte volumeLevel)
 //Returns the current volume level, 0 to 31
 byte getVolume(void)
 {
-  commandBytes[0] = MP3_COMMAND_GET_VOLUME;
+  return(settingVolume); //Rather than poll IC, just return local var
+  /*commandBytes[0] = MP3_COMMAND_GET_VOLUME;
   sendCommand(1);
 
   //Get two byte response
   unsigned int volLevel = getTwoByteResponse();
 
-  //First byte is 0xC1, second bye is volume level
-  return (volLevel & 0xFF);
+  //First byte is 0xC1, second byte is volume level
+  return (volLevel & 0xFF);*/
 }
 
 //Set the equalizer levels to one of 6 levels (normal, pop, rock, jazz, classic, bass)
@@ -157,6 +163,12 @@ byte setEQ(byte eqType)
   commandBytes[1] = eqType;
   sendCommand(2);
   return (getResponse());
+}
+
+//Returns the current EQ setting: one of 6 levels (normal, pop, rock, jazz, classic, bass)
+byte getEQ()
+{
+  return(settingEQ);
 }
 
 //Checks status. Returns true if a song is playing (status 0x01)
@@ -236,13 +248,15 @@ void sendCommand(byte commandLength)
 //Time out if the MP3 IC fails to respond
 byte getResponse(void)
 {
-  if (responseAvailable() == false) return (0xFF); //Timeout
+  if (responseAvailable() == false)
+    return (0xFF); //Timeout
 
   byte response = 0xFE;
   byte i = 0;
   while (mp3.available())
   {
-    if (i++ == 0) response = mp3.read();
+    byte incoming = mp3.read();
+    if (i++ == 0) response = incoming;
   }
 
   return (response);
@@ -269,8 +283,6 @@ unsigned int getTwoByteResponse(void)
 }
 
 //Returns true if serial data is available within an alloted amount of time
-//The setVolume command at 150ms seems to take the longest amount of time for
-//the IC to respond.
 boolean responseAvailable()
 {
   byte counter = 0;

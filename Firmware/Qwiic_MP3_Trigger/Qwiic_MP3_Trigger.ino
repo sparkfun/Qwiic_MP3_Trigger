@@ -28,6 +28,9 @@
   0x0B : Get card status : Returns true if card is present and mounted
   0x0C : Get firmware version : 2 bytes, upper ver and lower ver
   0x0D : Clear interrupts
+  0x0E : Get Volume
+  0x0F : Get EQ
+  0x10 : Get ID
   0xC7 : Change I2C address
 
   Reading data after any command:

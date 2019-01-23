@@ -17,8 +17,6 @@ All settings including volume, EQ, and I2C address are stored in NVM and loaded 
 
 We've written an extensive Arduino library to make MP3 playing over I2C a breeze. Play track X, change volume, play next/previous, check if track is playing, stop play, change EQ, and change I2C address are all supported.
 
-This board is one of our many [Qwiic](https://www.sparkfun.com/qwiic) compatible boards! Simply plug and go. No soldering, no figuring out which is SDA or SCL, and no voltage regulation or translation required!
-
 The I2C address of Qwiic MP3 Trigger is software configurable which means you can hookup over 100 on a single I2C bus!
 
 This board is one of our many [Qwiic](https://www.sparkfun.com/qwiic) compatible boards! Simply plug and go. No soldering, no figuring out which is SDA or SCL, and no voltage regulation or translation required!

@@ -30,6 +30,12 @@ Repository Contents
 * **/Documents** - Datasheets
 * **/Hardware** - Eagle design files (.brd, .sch)
 
+Documentation
+--------------
+* **[Qwiic MP3 Trigger Hookup Guide](https://learn.sparkfun.com/tutorials/qwiic-mp3-trigger-hookup-guide)** - Hookup guide for the Qwiic MP3 Trigger
+* **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
+* **[Arduino Library](https://github.com/sparkfun/SparkFun_Qwiic_MP3_Trigger_Arduino_Library)** - Library if you decide to use an Arduino via serial I2C.
+
 License Information
 -------------------
 

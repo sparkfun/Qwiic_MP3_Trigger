@@ -9,34 +9,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
-<layer number="20" name="Dimension" color="24" fill="1" visible="yes" active="no"/>
-<layer number="21" name="tPlace" color="16" fill="1" visible="yes" active="no"/>
-<layer number="22" name="bPlace" color="14" fill="1" visible="yes" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
+<layer number="20" name="Dimension" color="24" fill="1" visible="no" active="no"/>
+<layer number="21" name="tPlace" color="16" fill="1" visible="no" active="no"/>
+<layer number="22" name="bPlace" color="14" fill="1" visible="no" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -45,8 +45,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -54,20 +54,20 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
-<layer number="51" name="tDocu" color="6" fill="1" visible="yes" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
-<layer number="57" name="tCAD" color="7" fill="1" visible="yes" active="no"/>
-<layer number="58" name="bCAD" color="7" fill="1" visible="yes" active="no"/>
-<layer number="59" name="tCarbon" color="7" fill="1" visible="yes" active="no"/>
-<layer number="60" name="bCarbon" color="7" fill="1" visible="yes" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
+<layer number="51" name="tDocu" color="6" fill="1" visible="no" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="58" name="bCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="59" name="tCarbon" color="7" fill="1" visible="no" active="no"/>
+<layer number="60" name="bCarbon" color="7" fill="1" visible="no" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="no" active="no"/>
@@ -863,6 +863,27 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </device>
 </devices>
 </deviceset>
+<deviceset name="47KOHM" prefix="R">
+<description>&lt;h3&gt;47kΩ resistor&lt;/h3&gt;
+&lt;p&gt;A resistor is a passive two-terminal electrical component that implements electrical resistance as a circuit element. Resistors act to reduce current flow, and, at the same time, act to lower voltage levels within circuits. - Wikipedia&lt;/p&gt;</description>
+<gates>
+<gate name="G$1" symbol="RESISTOR" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-0603-1/10W-1%" package="0603">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="RES-07871"/>
+<attribute name="VALUE" value="47k"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
 <deviceset name="100KOHM" prefix="R">
 <description>&lt;h3&gt;100kΩ resistor&lt;/h3&gt;
 &lt;p&gt;A resistor is a passive two-terminal electrical component that implements electrical resistance as a circuit element. Resistors act to reduce current flow, and, at the same time, act to lower voltage levels within circuits. - Wikipedia&lt;/p&gt;</description>
@@ -999,39 +1020,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <technology name="">
 <attribute name="PROD_ID" value="RES-13495" constant="no"/>
 <attribute name="VALUE" value="100k" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="4.7KOHM" prefix="R">
-<description>&lt;h3&gt;4.7kΩ resistor&lt;/h3&gt;
-&lt;p&gt;A resistor is a passive two-terminal electrical component that implements electrical resistance as a circuit element. Resistors act to reduce current flow, and, at the same time, act to lower voltage levels within circuits. - Wikipedia&lt;/p&gt;</description>
-<gates>
-<gate name="G$1" symbol="RESISTOR" x="0" y="0"/>
-</gates>
-<devices>
-<device name="-0603-1/10W-1%" package="0603">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="PROD_ID" value="RES-07857"/>
-<attribute name="VALUE" value="4.7k"/>
-</technology>
-</technologies>
-</device>
-<device name="-0402T-1/16W-1%" package="0402-TIGHT">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="PROD_ID" value="RES-15343" constant="no"/>
-<attribute name="VALUE" value="4.7k" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -31061,6 +31049,19 @@ Commonly used for small ceramic capacitors. Like our 0.1uF (http://www.sparkfun.
 <wire x1="-0.9262" y1="-0.4262" x2="0.9262" y2="-0.4262" width="0.05" layer="39"/>
 <wire x1="0.9262" y1="-0.4262" x2="0.9262" y2="0.4262" width="0.05" layer="39"/>
 </package>
+<package name="CAP-PTH-10MM">
+<description>2 PTH spaced 10mm apart</description>
+<wire x1="-0.5" y1="0.635" x2="-0.5" y2="0" width="0.2032" layer="21"/>
+<pad name="1" x="-5" y="0" drill="0.9" diameter="1.651"/>
+<pad name="2" x="5" y="0" drill="0.9" diameter="1.651"/>
+<text x="0" y="1" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;Name</text>
+<text x="0" y="-1" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;Value</text>
+<wire x1="-0.5" y1="0" x2="-0.5" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="0.5" y1="0.635" x2="0.5" y2="0" width="0.2032" layer="21"/>
+<wire x1="0.5" y1="0" x2="0.5" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="-0.5" y1="0" x2="-3.5" y2="0" width="0.2032" layer="21"/>
+<wire x1="0.5" y1="0" x2="3.5" y2="0" width="0.2032" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="CAP">
@@ -31075,6 +31076,53 @@ Commonly used for small ceramic capacitors. Like our 0.1uF (http://www.sparkfun.
 </symbol>
 </symbols>
 <devicesets>
+<deviceset name="10NF" prefix="C">
+<description>&lt;h3&gt;0.01uF/10nF/10,000pF ceramic capacitors&lt;/h3&gt;
+&lt;p&gt;A capacitor is a passive two-terminal electrical component used to store electrical energy temporarily in an electric field.&lt;/p&gt;
+
+CAP-09321</description>
+<gates>
+<gate name="G$1" symbol="CAP" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-PTH-10MM-10000V-1-%" package="CAP-PTH-10MM">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-09321"/>
+<attribute name="VALUE" value="10nF"/>
+</technology>
+</technologies>
+</device>
+<device name="-0603-50V-10%" package="0603">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-00867"/>
+<attribute name="VALUE" value="10nF"/>
+</technology>
+</technologies>
+</device>
+<device name="-0402T-25V-10%" package="0402-TIGHT">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-14847" constant="no"/>
+<attribute name="VALUE" value="10nF" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
 <deviceset name="0.1UF" prefix="C">
 <description>&lt;h3&gt;0.1µF ceramic capacitors&lt;/h3&gt;
 &lt;p&gt;A capacitor is a passive two-terminal electrical component used to store electrical energy temporarily in an electric field.&lt;/p&gt;</description>
@@ -31199,6 +31247,50 @@ Commonly used for small ceramic capacitors. Like our 0.1uF (http://www.sparkfun.
 <technology name="">
 <attribute name="PROD_ID" value="CAP-15083" constant="no"/>
 <attribute name="VALUE" value="0.1uF" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="22NF/22,000PF" prefix="C">
+<description>&lt;h3&gt;0.022uF/22nF/22,000pF ceramic capacitors&lt;/h3&gt;
+&lt;p&gt;A capacitor is a passive two-terminal electrical component used to store electrical energy temporarily in an electric field.&lt;/p&gt;</description>
+<gates>
+<gate name="G$1" symbol="CAP" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-0603-50V-10%" package="0603">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-07885" constant="no"/>
+<attribute name="VALUE" value="22nF" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="-0603-25V-10%-X7R" package="0402">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-15062" constant="no"/>
+<attribute name="VALUE" value="22nF" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="-0805-50V-2%-C0G" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="CAP-16137" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -32188,14 +32280,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="R6" library="SparkFun-Resistors" deviceset="2.2KOHM" device="-0603-1/10W-1%" value="2.2k"/>
 <part name="SUPPLY15" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
 <part name="SUPPLY17" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
-<part name="R8" library="SparkFun-Resistors" deviceset="4.7KOHM" device="-0603-1/10W-1%" value="4.7k"/>
+<part name="R8" library="SparkFun-Resistors" deviceset="10KOHM" device="-0603-1/10W-1%" value="10k"/>
 <part name="SUPPLY18" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
 <part name="SUPPLY19" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
 <part name="J10" library="SparkFun-Connectors" deviceset="CONN_01" device="PTH_NO_SILK_YES_STOP"/>
 <part name="JP10" library="SparkFun-Connectors" deviceset="CONN_03" device="1X03_NO_SILK" value="PTH"/>
 <part name="JP12" library="SparkFun-Connectors" deviceset="CONN_02" device="1X02_NO_SILK" value="PTH"/>
 <part name="R10" library="SparkFun-Resistors" deviceset="10KOHM" device="-0603-1/10W-1%" value="10k"/>
-<part name="R11" library="SparkFun-Resistors" deviceset="100KOHM" device="-0603-1/10W-1%" value="100k"/>
+<part name="R11" library="SparkFun-Resistors" deviceset="47KOHM" device="-0603-1/10W-1%" value="47k"/>
 <part name="SUPPLY2" library="SparkFun-PowerSymbols" deviceset="5V" device=""/>
 <part name="C1" library="SparkFun-Capacitors" deviceset="10UF" device="-0603-6.3V-20%" value="10uF"/>
 <part name="SUPPLY5" library="SparkFun-PowerSymbols" deviceset="VCCIO" device=""/>
@@ -32206,16 +32298,16 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="SUPPLY11" library="SparkFun-PowerSymbols" deviceset="VCCIO" device=""/>
 <part name="R4" library="SparkFun-Resistors" deviceset="2.2KOHM" device="-0603-1/10W-1%" value="2.2k"/>
 <part name="GND16" library="SparkFun-PowerSymbols" deviceset="GND" device=""/>
-<part name="R5" library="SparkFun-Resistors" deviceset="10KOHM" device="-0603-1/10W-1%" value="10k"/>
-<part name="R9" library="SparkFun-Resistors" deviceset="10KOHM" device="-0603-1/10W-1%" value="10k"/>
+<part name="R5" library="SparkFun-Resistors" deviceset="100KOHM" device="-0603-1/10W-1%" value="100k"/>
+<part name="R9" library="SparkFun-Resistors" deviceset="100KOHM" device="-0603-1/10W-1%" value="100k"/>
 <part name="U1" library="SparkFun-IC-Amplifiers" deviceset="TPA2005D1" device="DRB" value="TPA2005D1"/>
 <part name="SUPPLY13" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
-<part name="C7" library="SparkFun-Capacitors" deviceset="0.1UF" device="-0603-25V-(+80/-20%)" value="0.1uF"/>
-<part name="C8" library="SparkFun-Capacitors" deviceset="0.1UF" device="-0603-25V-(+80/-20%)" value="0.1uF"/>
+<part name="C7" library="SparkFun-Capacitors" deviceset="10NF" device="-0603-50V-10%" value="10nF"/>
+<part name="C8" library="SparkFun-Capacitors" deviceset="10NF" device="-0603-50V-10%" value="10nF"/>
 <part name="SUPPLY14" library="SparkFun-PowerSymbols" deviceset="3.3V" device=""/>
 <part name="J11" library="SparkFun-Connectors" deviceset="CONN_04" device="1X04_NO_SILK"/>
 <part name="J12" library="SparkFun-Connectors" deviceset="CONN_04" device="1X04_NO_SILK"/>
-<part name="C5" library="SparkFun-Capacitors" deviceset="1.0UF" device="-0603-16V-10%" value="1.0uF"/>
+<part name="C5" library="SparkFun-Capacitors" deviceset="22NF/22,000PF" device="-0603-25V-10%-X7R" value="22nF"/>
 <part name="JP7" library="SparkFun-Jumpers" deviceset="JUMPER-SMT_2_NO" device="_SILK" package3d_urn="urn:adsk.eagle:package:39279/1" value="ADR"/>
 <part name="J1" library="SparkFun-Connectors" deviceset="MICRO-SD_CARD_SOCKET" device="PUSH-PUSH" value="MICRO-SD"/>
 <part name="U4" library="SparkFun-IC-Microcontroller" deviceset="ATTINY84-ARDUINO" device=""/>
@@ -32272,7 +32364,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <sheet>
 <plain>
 <text x="170.434" y="11.43" size="2.54" layer="94">N. Seidle</text>
-<text x="237.744" y="7.366" size="2.54" layer="94">X10</text>
+<text x="237.744" y="7.366" size="2.54" layer="94">v20</text>
 <text x="74.803" y="67.691" size="1.778" layer="97" rot="R90">Power</text>
 <text x="166.878" y="101.6" size="1.778" layer="97">7-Bit Unshifted I2C Address
 Open Jumper (Default): 0x37
@@ -32432,8 +32524,8 @@ from being injected onto Qwiic 3.3V</text>
 <attribute name="NAME" x="13.716" y="134.62" size="1.778" layer="95" font="vector" rot="R90" align="bottom-center"/>
 <attribute name="VALUE" x="16.764" y="134.62" size="1.778" layer="96" font="vector" rot="R90" align="top-center"/>
 </instance>
-<instance part="GND16" gate="1" x="160.02" y="66.04" smashed="yes">
-<attribute name="VALUE" x="157.48" y="63.5" size="1.778" layer="96"/>
+<instance part="GND16" gate="1" x="162.56" y="66.04" smashed="yes">
+<attribute name="VALUE" x="160.02" y="63.5" size="1.778" layer="96"/>
 </instance>
 <instance part="R5" gate="G$1" x="180.34" y="58.42" smashed="yes">
 <attribute name="NAME" x="180.34" y="59.944" size="1.778" layer="95" font="vector" align="bottom-center"/>
@@ -32450,13 +32542,13 @@ from being injected onto Qwiic 3.3V</text>
 <instance part="SUPPLY13" gate="G$1" x="193.04" y="78.74" smashed="yes">
 <attribute name="VALUE" x="193.04" y="81.534" size="1.778" layer="96" align="bottom-center"/>
 </instance>
-<instance part="C7" gate="G$1" x="167.64" y="58.42" smashed="yes" rot="R90">
-<attribute name="NAME" x="164.719" y="59.944" size="1.778" layer="95" font="vector" rot="R90"/>
-<attribute name="VALUE" x="169.799" y="59.944" size="1.778" layer="96" font="vector" rot="R90"/>
+<instance part="C7" gate="G$1" x="170.18" y="58.42" smashed="yes" rot="R90">
+<attribute name="NAME" x="167.259" y="59.944" size="1.778" layer="95" font="vector" rot="R90"/>
+<attribute name="VALUE" x="172.339" y="59.944" size="1.778" layer="96" font="vector" rot="R90"/>
 </instance>
-<instance part="C8" gate="G$1" x="167.64" y="48.26" smashed="yes" rot="R90">
-<attribute name="NAME" x="164.719" y="49.784" size="1.778" layer="95" font="vector" rot="R90"/>
-<attribute name="VALUE" x="169.799" y="49.784" size="1.778" layer="96" font="vector" rot="R90"/>
+<instance part="C8" gate="G$1" x="170.18" y="48.26" smashed="yes" rot="R90">
+<attribute name="NAME" x="167.259" y="49.784" size="1.778" layer="95" font="vector" rot="R90"/>
+<attribute name="VALUE" x="172.339" y="49.784" size="1.778" layer="96" font="vector" rot="R90"/>
 </instance>
 <instance part="SUPPLY14" gate="G$1" x="226.06" y="91.44" smashed="yes">
 <attribute name="VALUE" x="226.06" y="94.234" size="1.778" layer="96" align="bottom-center"/>
@@ -32469,17 +32561,17 @@ from being injected onto Qwiic 3.3V</text>
 <attribute name="VALUE" x="104.14" y="10.414" size="1.778" layer="96" font="vector"/>
 <attribute name="NAME" x="104.14" y="25.908" size="1.778" layer="95" font="vector"/>
 </instance>
-<instance part="C5" gate="G$1" x="167.64" y="71.12" smashed="yes" rot="R90">
-<attribute name="NAME" x="164.719" y="72.644" size="1.778" layer="95" font="vector" rot="R90"/>
-<attribute name="VALUE" x="169.799" y="72.644" size="1.778" layer="96" font="vector" rot="R90"/>
+<instance part="C5" gate="G$1" x="170.18" y="71.12" smashed="yes" rot="R90">
+<attribute name="NAME" x="167.259" y="72.644" size="1.778" layer="95" font="vector" rot="R90"/>
+<attribute name="VALUE" x="172.339" y="72.644" size="1.778" layer="96" font="vector" rot="R90"/>
 </instance>
 <instance part="JP7" gate="G$1" x="223.52" y="114.3" smashed="yes" rot="R90">
 <attribute name="NAME" x="220.98" y="111.76" size="1.778" layer="95" font="vector" rot="R90"/>
 <attribute name="VALUE" x="226.06" y="111.76" size="1.778" layer="96" font="vector" rot="R90" align="top-left"/>
 </instance>
-<instance part="J1" gate="J1" x="33.02" y="142.24" smashed="yes">
-<attribute name="NAME" x="27.94" y="157.988" size="1.778" layer="95"/>
-<attribute name="VALUE" x="27.94" y="127" size="1.778" layer="96"/>
+<instance part="J1" gate="J1" x="30.48" y="142.24" smashed="yes">
+<attribute name="NAME" x="25.4" y="157.988" size="1.778" layer="95"/>
+<attribute name="VALUE" x="25.4" y="127" size="1.778" layer="96"/>
 </instance>
 <instance part="U4" gate="U1" x="177.8" y="134.62" smashed="yes">
 <attribute name="NAME" x="162.56" y="153.162" size="1.778" layer="95"/>
@@ -32487,7 +32579,6 @@ from being injected onto Qwiic 3.3V</text>
 </instance>
 <instance part="JP9" gate="G$1" x="231.14" y="149.86" smashed="yes" rot="R270">
 <attribute name="NAME" x="229.108" y="145.923" size="1.778" layer="95" font="vector"/>
-<attribute name="VALUE" x="230.759" y="147.32" size="1.778" layer="96" font="vector" rot="R270" align="top-left"/>
 </instance>
 <instance part="J7" gate="G$1" x="175.26" y="165.1" smashed="yes">
 <attribute name="NAME" x="170.18" y="170.688" size="1.778" layer="95" font="vector"/>
@@ -32503,8 +32594,8 @@ from being injected onto Qwiic 3.3V</text>
 <attribute name="NAME" x="134.62" y="76.708" size="1.778" layer="95" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="124.714" y="63.246" size="1.778" layer="96" font="vector"/>
 </instance>
-<instance part="SUPPLY16" gate="G$1" x="22.86" y="154.94" smashed="yes">
-<attribute name="VALUE" x="22.86" y="157.734" size="1.778" layer="96" align="bottom-center"/>
+<instance part="SUPPLY16" gate="G$1" x="20.32" y="154.94" smashed="yes">
+<attribute name="VALUE" x="20.32" y="157.734" size="1.778" layer="96" align="bottom-center"/>
 </instance>
 <instance part="U3" gate="G$1" x="30.48" y="66.04" smashed="yes">
 <attribute name="NAME" x="22.86" y="75.184" size="1.778" layer="95"/>
@@ -32528,12 +32619,12 @@ from being injected onto Qwiic 3.3V</text>
 <attribute name="NAME" x="108.839" y="65.024" size="1.778" layer="95" font="vector" rot="R90"/>
 <attribute name="VALUE" x="113.919" y="65.024" size="1.778" layer="96" font="vector" rot="R90"/>
 </instance>
-<instance part="C9" gate="G$1" x="45.72" y="137.16" smashed="yes">
-<attribute name="NAME" x="47.244" y="140.081" size="1.778" layer="95"/>
-<attribute name="VALUE" x="47.244" y="135.001" size="1.778" layer="96"/>
+<instance part="C9" gate="G$1" x="43.18" y="137.16" smashed="yes">
+<attribute name="NAME" x="44.704" y="140.081" size="1.778" layer="95"/>
+<attribute name="VALUE" x="44.704" y="135.001" size="1.778" layer="96"/>
 </instance>
-<instance part="SUPPLY20" gate="G$1" x="45.72" y="144.78" smashed="yes">
-<attribute name="VALUE" x="45.72" y="147.574" size="1.778" layer="96" align="bottom-center"/>
+<instance part="SUPPLY20" gate="G$1" x="43.18" y="144.78" smashed="yes">
+<attribute name="VALUE" x="43.18" y="147.574" size="1.778" layer="96" align="bottom-center"/>
 </instance>
 <instance part="SUPPLY21" gate="G$1" x="96.52" y="160.02" smashed="yes">
 <attribute name="VALUE" x="96.52" y="162.814" size="1.778" layer="96" align="bottom-center"/>
@@ -32573,11 +32664,11 @@ from being injected onto Qwiic 3.3V</text>
 <instance part="GND3" gate="1" x="15.24" y="124.46" smashed="yes">
 <attribute name="VALUE" x="15.24" y="124.206" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="GND5" gate="1" x="22.86" y="127" smashed="yes">
-<attribute name="VALUE" x="22.86" y="126.746" size="1.778" layer="96" align="top-center"/>
+<instance part="GND5" gate="1" x="20.32" y="127" smashed="yes">
+<attribute name="VALUE" x="20.32" y="126.746" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="GND6" gate="1" x="45.72" y="129.54" smashed="yes">
-<attribute name="VALUE" x="45.72" y="129.286" size="1.778" layer="96" align="top-center"/>
+<instance part="GND6" gate="1" x="43.18" y="129.54" smashed="yes">
+<attribute name="VALUE" x="43.18" y="129.286" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="GND7" gate="1" x="81.28" y="109.22" smashed="yes">
 <attribute name="VALUE" x="81.28" y="108.966" size="1.778" layer="96" align="top-center"/>
@@ -32725,8 +32816,8 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="GND" class="0">
 <segment>
-<wire x1="162.56" y1="71.12" x2="160.02" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="160.02" y1="71.12" x2="160.02" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="165.1" y1="71.12" x2="162.56" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="71.12" x2="162.56" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="GND16" gate="1" pin="GND"/>
 <pinref part="C5" gate="G$1" pin="1"/>
 </segment>
@@ -32736,18 +32827,18 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="GND3" gate="1" pin="GND"/>
 </segment>
 <segment>
-<wire x1="25.4" y1="134.62" x2="22.86" y2="134.62" width="0.1524" layer="91"/>
-<wire x1="22.86" y1="134.62" x2="22.86" y2="132.08" width="0.1524" layer="91"/>
-<wire x1="22.86" y1="132.08" x2="22.86" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="132.08" x2="22.86" y2="132.08" width="0.1524" layer="91"/>
-<junction x="22.86" y="132.08"/>
+<wire x1="22.86" y1="134.62" x2="20.32" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="134.62" x2="20.32" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="132.08" x2="20.32" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="132.08" x2="20.32" y2="132.08" width="0.1524" layer="91"/>
+<junction x="20.32" y="132.08"/>
 <pinref part="J1" gate="J1" pin="GND"/>
 <pinref part="J1" gate="J1" pin="SHIELD"/>
 <pinref part="GND5" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="C9" gate="G$1" pin="2"/>
-<wire x1="45.72" y1="132.08" x2="45.72" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="132.08" x2="43.18" y2="134.62" width="0.1524" layer="91"/>
 <pinref part="GND6" gate="1" pin="GND"/>
 </segment>
 <segment>
@@ -33016,9 +33107,9 @@ from being injected onto Qwiic 3.3V</text>
 <wire x1="195.58" y1="149.86" x2="198.12" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="R8" gate="G$1" pin="1"/>
 <wire x1="198.12" y1="149.86" x2="198.12" y2="152.4" width="0.1524" layer="91"/>
-<wire x1="198.12" y1="149.86" x2="210.82" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="149.86" x2="208.28" y2="149.86" width="0.1524" layer="91"/>
 <junction x="198.12" y="149.86"/>
-<label x="210.82" y="149.86" size="1.27" layer="95" xref="yes"/>
+<label x="208.28" y="149.86" size="1.27" layer="95" xref="yes"/>
 <pinref part="U4" gate="U1" pin="(!RESET!)11"/>
 </segment>
 <segment>
@@ -33046,7 +33137,7 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="SD_CMD" class="0">
 <segment>
-<wire x1="25.4" y1="149.86" x2="12.7" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="149.86" x2="12.7" y2="149.86" width="0.1524" layer="91"/>
 <label x="12.7" y="149.86" size="1.27" layer="95" rot="R180" xref="yes"/>
 <pinref part="J1" gate="J1" pin="DI"/>
 </segment>
@@ -33058,7 +33149,7 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="SD_CLK" class="0">
 <segment>
-<wire x1="25.4" y1="144.78" x2="15.24" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="144.78" x2="15.24" y2="144.78" width="0.1524" layer="91"/>
 <label x="12.7" y="144.78" size="1.27" layer="95" rot="R180" xref="yes"/>
 <pinref part="R4" gate="G$1" pin="2"/>
 <wire x1="15.24" y1="144.78" x2="12.7" y2="144.78" width="0.1524" layer="91"/>
@@ -33074,7 +33165,7 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="SD_DAT" class="0">
 <segment>
-<wire x1="25.4" y1="142.24" x2="12.7" y2="142.24" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="142.24" x2="12.7" y2="142.24" width="0.1524" layer="91"/>
 <label x="12.7" y="142.24" size="1.27" layer="95" rot="R180" xref="yes"/>
 <pinref part="J1" gate="J1" pin="DO"/>
 </segment>
@@ -33130,14 +33221,14 @@ from being injected onto Qwiic 3.3V</text>
 </net>
 <net name="N$8" class="0">
 <segment>
-<wire x1="170.18" y1="71.12" x2="175.26" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="71.12" x2="175.26" y2="71.12" width="0.1524" layer="91"/>
 <pinref part="R11" gate="G$1" pin="1"/>
 <pinref part="C5" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$9" class="0">
 <segment>
-<wire x1="175.26" y1="58.42" x2="170.18" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="58.42" x2="172.72" y2="58.42" width="0.1524" layer="91"/>
 <pinref part="R5" gate="G$1" pin="1"/>
 <pinref part="C7" gate="G$1" pin="2"/>
 </segment>
@@ -33242,15 +33333,15 @@ from being injected onto Qwiic 3.3V</text>
 <wire x1="132.08" y1="172.72" x2="132.08" y2="170.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<wire x1="25.4" y1="147.32" x2="22.86" y2="147.32" width="0.1524" layer="91"/>
-<wire x1="22.86" y1="147.32" x2="22.86" y2="154.94" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="147.32" x2="20.32" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="147.32" x2="20.32" y2="154.94" width="0.1524" layer="91"/>
 <pinref part="J1" gate="J1" pin="VCC"/>
 <pinref part="SUPPLY16" gate="G$1" pin="VCCIO"/>
 </segment>
 <segment>
 <pinref part="C9" gate="G$1" pin="1"/>
 <pinref part="SUPPLY20" gate="G$1" pin="VCCIO"/>
-<wire x1="45.72" y1="144.78" x2="45.72" y2="142.24" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="144.78" x2="43.18" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="ADKEY" class="0">
@@ -33271,8 +33362,8 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="U5" gate="U1" pin="SPK+"/>
 </segment>
 <segment>
-<wire x1="162.56" y1="48.26" x2="160.02" y2="48.26" width="0.1524" layer="91"/>
-<label x="160.02" y="48.26" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="165.1" y1="48.26" x2="162.56" y2="48.26" width="0.1524" layer="91"/>
+<label x="162.56" y="48.26" size="1.27" layer="95" rot="R180" xref="yes"/>
 <pinref part="C8" gate="G$1" pin="1"/>
 </segment>
 <segment>
@@ -33288,8 +33379,8 @@ from being injected onto Qwiic 3.3V</text>
 <pinref part="U5" gate="U1" pin="SPK-"/>
 </segment>
 <segment>
-<wire x1="162.56" y1="58.42" x2="160.02" y2="58.42" width="0.1524" layer="91"/>
-<label x="160.02" y="58.42" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="165.1" y1="58.42" x2="162.56" y2="58.42" width="0.1524" layer="91"/>
+<label x="162.56" y="58.42" size="1.27" layer="95" rot="R180" xref="yes"/>
 <pinref part="C7" gate="G$1" pin="1"/>
 </segment>
 <segment>
@@ -33301,7 +33392,7 @@ from being injected onto Qwiic 3.3V</text>
 <net name="N$5" class="0">
 <segment>
 <pinref part="R9" gate="G$1" pin="1"/>
-<wire x1="175.26" y1="48.26" x2="170.18" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="48.26" x2="172.72" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="C8" gate="G$1" pin="2"/>
 </segment>
 </net>

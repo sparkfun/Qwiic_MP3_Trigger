@@ -47,12 +47,19 @@
 
   Change long:
   v1.1 - Added clear interrupt command. Created Interrupt State Machine.
+  v1.2 - Supplier delivered WT2003S ICs that seem to be incorrectly programmed.
+         The device re-plays the last played tracked in an endless loop. To
+         circumvent the problem we will mute volume once track has played once.
+         This IC error also prevents the pause and stop functions from working.
+         Stop function will be replaced with mute. Pause/play cannot be fixed.
+         IsPlaying command will be replaced with internal state rather than checking
+         what the IC reports (always playing).
 */
 
 #include <SoftwareSerial.h>
 
 #if defined(__AVR_ATmega328P__)
-SoftwareSerial mp3(6, 4); //RX, TX on dev hardware
+SoftwareSerial mp3(3, 2); //RX, TX on dev hardware
 #else
 SoftwareSerial mp3(1, 0); //RX, TX on production hardware
 #endif
@@ -117,9 +124,20 @@ SoftwareSerial mp3(1, 0); //RX, TX on production hardware
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 1;
+const byte firmwareVersionMinor = 2;
 
 //Hardware pins
+#if defined(__AVR_ATmega328P__)
+//Test hardware
+const byte adr = 9; //Address select jumper is on pin 9
+const byte trigger1 = 6; //There are four 'trigger' pins used to trigger the playing of a track
+const byte trigger2 = 10;
+const byte trigger3 = 8;
+const byte trigger4 = 11;
+const byte interruptOutput = 7;
+const byte playing = 5;
+#else
+//Production hardware
 const byte adr = 9; //Address select jumper is on pin 9
 const byte trigger1 = 5; //There are four 'trigger' pins used to trigger the playing of a track
 const byte trigger2 = 10;
@@ -127,7 +145,7 @@ const byte trigger3 = 8;
 const byte trigger4 = 3;
 const byte interruptOutput = 7;
 const byte playing = 2;
-
+#endif
 //Variables used in the I2C interrupt so we use volatile
 volatile byte systemStatus = SYSTEM_STATUS_OK; //Tracks the response from the MP3 IC
 
@@ -160,9 +178,15 @@ volatile byte interruptState = STATE_NO_INT;
 byte songCount = 0; //Tracks how many songs are available to play
 byte oldTriggerNumber = 0; //Tracks trigger state changes
 unsigned long lastCheck = 0; //Tracks the last time we checked if song is playing
+bool trackPlaying = false; //Workaround for loop issue: Goes true when play starts, goes false as soon as playing pin goes low
 
 void setup()
 {
+#if defined(__AVR_ATmega328P__)
+  Serial.begin(115200);
+  Serial.println("Qwiic MP3 Controller");
+#endif
+
   pinMode(adr, INPUT_PULLUP);
   pinMode(playing, INPUT_PULLUP);
 
@@ -189,13 +213,12 @@ void setup()
     if (systemStatus == 0x00) break; //IC responded OK
   }
 
-  setVolume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  setMP3Volume(0); //Mute volume
+  //setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
   systemStatus = setEQ(settingEQ); //Set to last EQ setting
   songCount = getSongCount(); //Preload this before we begin
 
 #if defined(__AVR_ATmega328P__)
-  Serial.begin(115200);
-  Serial.println("Qwiic MP3 Controller");
   Serial.print("QMP3 Address: 0x");
   Serial.println(settingAddress, HEX);
 
@@ -214,6 +237,13 @@ void setup()
 
 void loop()
 {
+  //Mute volume once a song has completed
+  if (isPlaying() == false && trackPlaying == true)
+  {
+    trackPlaying = false; //Update internal state
+    setMP3Volume(0); //Mute because track will auto-loop
+  }
+
   //Check trigger pins and act accordingly
   if (digitalRead(trigger1) == LOW ||
       digitalRead(trigger2) == LOW ||
@@ -297,7 +327,7 @@ void loop()
     else if (commandQue[queTail][0] == COMMAND_PLAY_FILENUMBER)
       systemStatus = playFileName(commandQue[queTail][1]);
     else if (commandQue[queTail][0] == COMMAND_SET_VOLUME)
-      systemStatus = setVolume(commandQue[queTail][1]);
+      systemStatus = setInternalVolume(commandQue[queTail][1]);
     else if (commandQue[queTail][0] == COMMAND_PAUSE)
       systemStatus = pause();
     else if (commandQue[queTail][0] == COMMAND_PLAY_NEXT)

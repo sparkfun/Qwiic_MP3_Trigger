@@ -7,7 +7,8 @@
 rem The fuse bits are *extremely* important to get correct. Be careful.
 rem We program these bits separate from flash so that ATtiny is running at 8MHz internal for max flashing programming speed
 rem These were found by using ATtiny core and 'Programming Bootloader' and looking at verbose Arduino IDE output
-@avrdude -C avrdude.conf -pattiny84 -cusbtiny -e -Uefuse:w:0xFF:m -Uhfuse:w:0b11010111:m -Ulfuse:w:0xE2:m
+rem This sets the Brown Out Detect to 2.7V
+@avrdude -C avrdude.conf -pattiny84 -cusbtiny -e -Uefuse:w:0xFF:m -Uhfuse:w:0b11010101:m -Ulfuse:w:0xE2:m
 
 @timeout 1
 

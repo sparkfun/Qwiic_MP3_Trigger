@@ -37,7 +37,7 @@ unsigned int getSongCount()
   while (mp3.available() < 3)
   {
     noIntDelay(1);
-    if (i++ > 250) return(0); //Error
+    if (i++ > 250) return (0); //Error
   }
 
   unsigned int count = 0xFFFF;
@@ -63,7 +63,7 @@ void getSongName()
   commandBytes[0] = MP3_COMMAND_GET_SONG_NAME_PLAYING;
   sendCommand(1);
 
-  strcpy(songName, "Error\0");
+  strcpy(songName, (char *)"Error\0");
   if (responseAvailable() == false) return;
 
   //Wait for 9 byte response. Timeout after 250ms
@@ -73,7 +73,7 @@ void getSongName()
     noIntDelay(1);
     if (i++ > 250) return; //Return with Error in songName
   }
-  
+
   //Parse the response
   i = 0;
   while (mp3.available())
@@ -96,7 +96,12 @@ byte playTrackNumber(byte trackNumber)
   commandBytes[1] = trackNumber >> 8; //MSB
   commandBytes[2] = trackNumber & 0xFF; //LSB
   sendCommand(3);
-  return (getResponse());
+  byte response = getResponse();
+
+  if (trackPlaying == false) setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  trackPlaying = true;
+
+  return (response);
 }
 
 //Play a file # from the root directory
@@ -112,7 +117,12 @@ byte playFileName(byte fileNumber)
   fileNumber %= 10;
   commandBytes[4] = '0' + fileNumber;
   sendCommand(5);
-  return (getResponse());
+  byte response = getResponse();
+
+  if (trackPlaying == false) setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  trackPlaying = true;
+
+  return (response);
 }
 
 //Play a file # from the root directory
@@ -128,31 +138,64 @@ byte playTriggerFile(byte triggerNumber)
   triggerNumber %= 10;
   commandBytes[4] = '0' + triggerNumber;
   sendCommand(5);
-  return (getResponse());
+  byte response = getResponse();
+
+  if (trackPlaying == false) setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  trackPlaying = true;
+
+  return (response);
+}
+
+//Set the internal variable but don't change MP3 IC level
+byte setInternalVolume(byte volumeLevel)
+{
+  if (volumeLevel > 31) volumeLevel = 31; //Error check
+  settingVolume = volumeLevel; //Update internal value
+
+#if defined(__AVR_ATmega328P__)
+  Serial.print("Set Internal volume to: ");
+  Serial.println(settingVolume);
+#endif
+
+  if (trackPlaying == true) setMP3Volume(settingVolume);
+  return (0);
 }
 
 //Set volume. 0 is off. 31 max.
-byte setVolume(byte volumeLevel)
+byte setMP3Volume(byte volumeLevel)
 {
   if (volumeLevel > 31) volumeLevel = 31; //Error check
+  //
+  //  settingVolume = volumeLevel; //Update internal value
+  //
+  //if(trackPlaying == false) return(settingVolume); //Autoloop work around: If we're ignoring the auto-loop playing, don't turn up volume.
+
+  //If we are actively playing, go ahead and set volume
   commandBytes[0] = MP3_COMMAND_SET_VOLUME;
   commandBytes[1] = volumeLevel;
   sendCommand(2);
-  return (getResponse());
+  byte response = getResponse();
+
+#if defined(__AVR_ATmega328P__)
+  Serial.print("SetMP3volume to: ");
+  Serial.println(volumeLevel);
+#endif
+
+  return (response);
 }
 
 //Returns the current volume level, 0 to 31
 byte getVolume(void)
 {
-  return(settingVolume); //Rather than poll IC, just return local var
+  return (settingVolume); //Rather than poll IC, just return local var
   /*commandBytes[0] = MP3_COMMAND_GET_VOLUME;
-  sendCommand(1);
+    sendCommand(1);
 
-  //Get two byte response
-  unsigned int volLevel = getTwoByteResponse();
+    //Get two byte response
+    unsigned int volLevel = getTwoByteResponse();
 
-  //First byte is 0xC1, second byte is volume level
-  return (volLevel & 0xFF);*/
+    //First byte is 0xC1, second byte is volume level
+    return (volLevel & 0xFF);*/
 }
 
 //Set the equalizer levels to one of 6 levels (normal, pop, rock, jazz, classic, bass)
@@ -168,7 +211,7 @@ byte setEQ(byte eqType)
 //Returns the current EQ setting: one of 6 levels (normal, pop, rock, jazz, classic, bass)
 byte getEQ()
 {
-  return(settingEQ);
+  return (settingEQ);
 }
 
 //Checks status. Returns true if a song is playing (status 0x01)
@@ -186,17 +229,35 @@ boolean isPlaying(void)
 //01: play, 02: stop, 03: pause
 byte getPlayStatus(void)
 {
-  commandBytes[0] = MP3_COMMAND_GET_CURRENT_STATE;
-  sendCommand(1);
-  return (getTwoByteResponse() & 0xFF);
+  //  commandBytes[0] = MP3_COMMAND_GET_CURRENT_STATE;
+  //  sendCommand(1);
+  //  return (getTwoByteResponse() & 0xFF);
+
+  if (trackPlaying == true) return (1); //Playing
+  else return (2); //Stop
 }
 
 //Pause: will pause currently playing track, or starting playing if paused
 byte pause(void)
 {
-  commandBytes[0] = MP3_COMMAND_PAUSE;
-  sendCommand(1);
-  return (getResponse());
+  //  commandBytes[0] = MP3_COMMAND_PAUSE;
+  //  sendCommand(1);
+  //  return (response);
+
+  //Because of the loop issue, start playing doesn't really work, but we can turn the volume back up...
+
+  //If we are not currently playing a track, turn volume up and remember we're 'playing'
+  if (trackPlaying == false)
+  {
+    setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+    trackPlaying = true;
+  }
+  //If we *are* currently playing a track, turn off volume and remember we're 'paused'
+  else if (trackPlaying == true)
+  {
+    setMP3Volume(0);
+    trackPlaying = false;
+  }
 }
 
 //Play next track
@@ -204,7 +265,12 @@ byte playNext(void)
 {
   commandBytes[0] = MP3_COMMAND_NEXT;
   sendCommand(1);
-  return (getResponse());
+  byte response = getResponse();
+
+  if (trackPlaying == false) setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  trackPlaying = true;
+
+  return (response);
 }
 
 //Play previous track
@@ -212,15 +278,24 @@ byte playPrevious(void)
 {
   commandBytes[0] = MP3_COMMAND_PREVIOUS;
   sendCommand(1);
-  return (getResponse());
+  byte response = getResponse();
+
+  if (trackPlaying == false) setMP3Volume(settingVolume); //Go to the volume stored in system settings. This can take >150ms
+  trackPlaying = true;
+
+  return (response);
 }
 
 //Stops playing any current track
 byte stopPlaying(void)
 {
-  commandBytes[0] = MP3_COMMAND_STOP;
-  sendCommand(1);
-  return (getResponse());
+  //  commandBytes[0] = MP3_COMMAND_STOP;
+  //  sendCommand(1);
+  //  return (getResponse());
+
+  if (trackPlaying == true) setMP3Volume(0); //Mute volume
+  trackPlaying = false;
+  return (true);
 }
 
 //Sends the global command array attaching the start code,
